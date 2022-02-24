@@ -265,7 +265,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		if(FeedingCounter >= FEEDING_TIME_IN_S) // timer to count seconds from start feeding to turn off this activity
 		{
-			HAL_GPIO_TogglePin(BP_USER_LED_GPIO_Port, BP_USER_LED_Pin);
+			HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
 			predefinedActivityKarmienie(0);
 			FeedingCounter = 0;
 			HAL_TIM_Base_Stop_IT(&htim10);
@@ -283,7 +283,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		XPT2046_IRQ();
 	}
 
-	if(GPIO_Pin == RTC_IRQ_Pin) // Interrupt from RTC - alarm one per minute
+	if(GPIO_Pin == IRQ_DS3231_RTC_Pin) // Interrupt from RTC - alarm one per minute
 	{
 		DS3231_ClearAlarm2Flag();
 

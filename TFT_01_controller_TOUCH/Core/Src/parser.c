@@ -141,13 +141,13 @@ void UART_ParseLED()
 
 		if(LedState == 1) // LED ON
 		{
-			HAL_GPIO_WritePin(BP_USER_LED_GPIO_Port, BP_USER_LED_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_RESET);
 			UARTDMA_Print(&huartdma2, "LED=On\r\n");
 
 		}
 		else if(LedState == 0) // LED OFF
 		{
-			HAL_GPIO_WritePin(BP_USER_LED_GPIO_Port, BP_USER_LED_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_SET);
 			UARTDMA_Print(&huartdma2, "LED=Off\r\n");
 		}
 		else // Wrong state number
