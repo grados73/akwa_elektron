@@ -44,6 +44,7 @@
 #include "menuTFT.h"
 #include "ds3231_for_stm32_hal.h"	//RTC
 #include "eeprom.h"
+#include "ESP_parse.h"
 /* PRRIVATE FONTS*/
 #include "EnhancedFonts/arialBlack_20ptFontInfo.h"
 #include "EnhancedFonts/arialBlack_11ptFontInfo.h"
@@ -71,7 +72,8 @@
 //
 // Private Variables
 //
-UARTDMA_HandleTypeDef huartdma2;
+UARTDMA_HandleTypeDef huartdma2;	// to second uC
+UARTDMA_HandleTypeDef huartdma1;	// to ESP
 I2C_HandleTypeDef hi2c1;
 //
 // To update current displayed clock - current TFT screen displayed
@@ -143,13 +145,14 @@ int main(void)
   ILI9341_Init(&hspi1);
   // UART in DMA mode with use RingBuffer INIT
   UARTDMA_Init(&huartdma2, &huart2);
+  UARTDMA_Init(&huartdma1, &huart1);
   // TFT touch controller INIT
   XPT2046_Init(&hspi3, EXTI9_5_IRQn);
   // RTC Initialization - I2C1
   DS3231_Init(&hi2c1);
   DS3231_SetInterruptMode(DS3231_ALARM_INTERRUPT);
   DS3231_EnableOscillator(DS3231_ENABLED);
-  // EEPROM CHECK
+  // EEPROM CHECK TODO! Add check of eeprom and informing on screen about results
   uint8_t result = 0;
   eeprom_read(0x01, &result, sizeof(result));
 
