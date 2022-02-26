@@ -43,5 +43,25 @@ void ESP_ParseChangeRelayState(void)
 
 }
 
+//
+// Send info to Blynk Server
+//
+void ESP_SendCurrentTempInside(float CurrentTemp)
+{
+	sprintf(Message, "TEMPINS=%f\n", CurrentTemp);
+	UARTDMA_Print(&huartdma1, Message); // Print message
+}
+
+void ESP_SendCurrentTempOutside(float CurrentTemp)
+{
+	sprintf(Message, "TEMPOUT=%f\n", CurrentTemp);
+	UARTDMA_Print(&huartdma1, Message); // Print message
+}
+
+void ESP_SendCurrentPressure(float CurrentPress)
+{
+	sprintf(Message, "PRES=%f\n", CurrentPress);
+	UARTDMA_Print(&huartdma1, Message); // Print message
+}
 
 

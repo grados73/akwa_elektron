@@ -188,10 +188,11 @@ void UART_ParseAnswTemp()
 						EF_SetFont(&arialBlack_20ptFontInfo);
 						sprintf((char*)Msg, "Temp. zewn: %.2f`C ", CTemp);
 						EF_PutString(Msg, TEMP_ZEW_POZ_X, TEMP_ZEW_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+						ESP_SendCurrentTempOutside(CTemp);
 				}
 				else if(NrCzujnika == 2)
 				{
-						if (CTemp == 0.0) // Error in connection to ds18b20
+						if (CTemp == 0.0) // Error in connection to ds18b20 - TODO! Send information about error in connection
 							{
 							CTemp = LCTemp;
 							EF_SetFont(&arialBlack_20ptFontInfo);
@@ -204,6 +205,7 @@ void UART_ParseAnswTemp()
 							sprintf((char*)Msg, "Temp. wewn: %.2f`C ", CTemp);
 							EF_PutString(Msg, TEMP_WEW_POZ_X, TEMP_WEW_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 							LCTemp = CTemp;
+							ESP_SendCurrentTempInside(CTemp);
 						}
 
 				}
@@ -229,6 +231,7 @@ void UART_ParseAnswPres()
 			EF_SetFont(&arialBlack_20ptFontInfo);
 			sprintf((char*)Msg, "Ciśnienie: %.1fhPa ", CPres);
 			EF_PutString(Msg, CISN_POZ_X, CISN_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+			ESP_SendCurrentPressure(CPres);
 		}
 		//UARTDMA_Print(&huartdma2, "PRESUPSUC\n");
 	}
