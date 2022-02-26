@@ -42,6 +42,7 @@ void ESP_ParseChangeRelayState(void);
 void ESP_SendCurrentTempInside(float CurrentTemp);
 void ESP_SendCurrentTempOutside(float CurrentTemp);
 void ESP_SendCurrentPressure(float CurrentPress);
+void ESP_SendCurrentWaterLvl(uint32_t CurrentWaterLvl);
 
 
 #endif /* INC_ESP_PARSE_H_ */

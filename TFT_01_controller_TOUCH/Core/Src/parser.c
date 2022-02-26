@@ -254,6 +254,7 @@ void UART_ParseAnswDist()
 			EF_SetFont(&arialBlack_20ptFontInfo);
 			sprintf((char*)Msg, "-%ldmm  ", CDist2water);
 			EF_PutString(Msg, POZ_WODY_POZ_X+153, POZ_WODY_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+			ESP_SendCurrentWaterLvl(CDist2water);
 		}
 		//UARTDMA_Print(&huartdma2, "PRESUPSUC\n");
 	}

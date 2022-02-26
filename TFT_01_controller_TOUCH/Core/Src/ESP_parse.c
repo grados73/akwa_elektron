@@ -64,4 +64,10 @@ void ESP_SendCurrentPressure(float CurrentPress)
 	UARTDMA_Print(&huartdma1, Message); // Print message
 }
 
+void ESP_SendCurrentWaterLvl(uint32_t CurrentWaterLvl)
+{
+	sprintf(Message, "WLVL=%ld\n", CurrentWaterLvl);
+	UARTDMA_Print(&huartdma1, Message); // Print message
+}
+
 
