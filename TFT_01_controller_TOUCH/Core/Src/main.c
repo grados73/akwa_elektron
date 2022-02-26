@@ -163,7 +163,7 @@ int main(void)
   while (1)
   {
 
-	  //
+	  //////////////////////////////////////////////////////
 	  // RECEIVE DATA FROM SECUND uC
 	  //
 	  if(UARTDMA_IsDataReceivedReady(&huartdma2))
@@ -176,7 +176,20 @@ int main(void)
 	  //
 	  UARTDMA_TransmitEvent(&huartdma2);
 
+	  //////////////////////////////////////////////////////
+	  // RECEIVE DATA FROM ESP
 	  //
+	  if(UARTDMA_IsDataReceivedReady(&huartdma1))
+	  {
+		  // Parsing function
+	  }
+
+	  //
+	  // TRANSMIT DATA AND COMAND TO ESP
+	  //
+	  UARTDMA_TransmitEvent(&huartdma1);
+
+	  ////////////////////////////////////////////////////////
 	  // TOUCH SCREEN
 	  //
 	  XPT2046_Task();
@@ -185,6 +198,7 @@ int main(void)
 	  // CURRENT DISPLAYED SCREEN
 	  //
 	  MenuTFT();
+	  ////////////////////////////////////////////////////////
 
     /* USER CODE END WHILE */
 

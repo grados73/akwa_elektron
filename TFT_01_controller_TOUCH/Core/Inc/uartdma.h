@@ -1,8 +1,6 @@
 /*
  * uartdma.h
  *
- *  Created on: Aug 21, 2020
- *      Author: Mateusz Salamon
  */
 
 #ifndef INC_UARTDMA_H_
