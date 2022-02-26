@@ -83,6 +83,7 @@ void Error_Handler(void);
 #define nRF_CE_GPIO_Port GPIOB
 #define nRF_IRQ_Pin GPIO_PIN_2
 #define nRF_IRQ_GPIO_Port GPIOB
+#define nRF_IRQ_EXTI_IRQn EXTI2_IRQn
 #define TOUCH_CS_Pin GPIO_PIN_10
 #define TOUCH_CS_GPIO_Port GPIOB
 #define TFT_CS_Pin GPIO_PIN_12
@@ -97,6 +98,7 @@ void Error_Handler(void);
 #define I2C3_SCL_EEPROM_GPIO_Port GPIOA
 #define TOUCH_IRQ_Pin GPIO_PIN_9
 #define TOUCH_IRQ_GPIO_Port GPIOA
+#define TOUCH_IRQ_EXTI_IRQn EXTI9_5_IRQn
 #define SPI5_MOSI_nRF_Pin GPIO_PIN_10
 #define SPI5_MOSI_nRF_GPIO_Port GPIOA
 #define CSN_nRF_Pin GPIO_PIN_11

@@ -151,8 +151,8 @@ int main(void)
   DS3231_EnableOscillator(DS3231_ENABLED);
   // EEPROM CHECK
   uint8_t result = 0;
-  while (eeprom_read(0x01, &result, sizeof(result)) != HAL_OK)
-  Error_Handler();
+  eeprom_read(0x01, &result, sizeof(result));
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
