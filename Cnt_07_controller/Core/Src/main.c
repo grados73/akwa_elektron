@@ -128,7 +128,8 @@ int main(void)
    UARTDMA_Init(&huartdma6, &huart6); // init UART to connect with distance sensor to measure water LVL
 
    // Initialization of DS18B20 Temperature sensor
-   if (ds18b20_init() != HAL_OK)  Error_Handler();
+   //if (ds18b20_init() != HAL_OK)  Error_Handler();
+   ds18b20_init(); // TODO! it is version for developing. In future handle errors ^^
 
    // Initialization of WS2812B led by default mode
    ws2812b_init();
