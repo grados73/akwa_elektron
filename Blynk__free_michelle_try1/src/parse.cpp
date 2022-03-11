@@ -69,6 +69,23 @@ uint8_t ParseClass::Parse(String * command)
             TypeOfCommand = PARSING_PRESS;
         }
     }
+    //Information about current water level
+    //WLVL=55\n
+    else if(NewComand.indexOf("WLVL") >= 0)
+    {
+        #if DEBUGING_MODE
+        Serial.print("WLVLCMDRCV\n");
+        #endif
+
+        uint8_t PositionOfEqual = NewComand.indexOf("=");
+        if (PositionOfEqual >= 0) // If Equal sign exist 
+        {
+            String SWaterLevel = NewComand.substring(PositionOfEqual+1);
+            int IWaterLevel = SWaterLevel.toInt();
+            UARTuCParse.WLVL = IWaterLevel;
+            TypeOfCommand = PARSING_WLVL;
+        }
+    }
     //Command to Turn Relay ON
     //RELAYON=1
     else if(NewComand.indexOf("RELAYON") >= 0)
@@ -103,6 +120,7 @@ uint8_t ParseClass::Parse(String * command)
             TypeOfCommand = PARSING_RELAY_OFF;          
         }
     }
+
     return TypeOfCommand;
 }
 

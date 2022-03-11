@@ -3,11 +3,12 @@
 #include <ESP8266WiFi.h>
 #include <string>
 
-#define DEBUGING_MODE 1
+#define DEBUGING_MODE 0
 
 #define PARSING_TEMPWEW 1
 #define PARSING_TEMPZEW 2
 #define PARSING_PRESS 3
+#define PARSING_WLVL 6
 #define PARSING_RELAY_ON 4
 #define PARSING_RELAY_OFF 5
 
@@ -21,6 +22,7 @@ public:
  float TempIns;
  float TempOut;
  float Press;
+ int WLVL;
  bool Relay1;
  bool Relay2;
  bool Relay3;

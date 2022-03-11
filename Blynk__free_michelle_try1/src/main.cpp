@@ -214,6 +214,10 @@ void SendDataToBlynk(uint8_t CommandID)
     case PARSING_PRESS:
       Blynk.virtualWrite(V5, UARTuCParse.Press);
       break;
+
+    case PARSING_WLVL:
+      Blynk.virtualWrite(V18, UARTuCParse.WLVL);
+      break;
     
     case PARSING_RELAY_ON:
       switch (UARTuCParse.NrOfLastChangedRelay)
