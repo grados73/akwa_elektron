@@ -1430,23 +1430,12 @@ void changeSwitchStatusTouch(uint8_t y)
 	{
 		if(SwitchesButtonState[0] >= 1) // if is ON
 		{
-			SendComand(UCMD_RELAY_1_OFF); // Send comannd to OFF
-			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_1_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			SwitchesButtonState[0] = 0;
-			EEPROM_RelayStateUpdate(1, 0);
+			firstSwitchTurn(0);
 		}
 		else // if is OFF
 		{
-			SendComand(UCMD_RELAY_1_ON); // Send comannd to ON
-			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_1_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
-			SwitchesButtonState[0] = 1;
-			EEPROM_RelayStateUpdate(1, 1);
+			firstSwitchTurn(1);
 		}
-
 	}
 	//
 	// SECOND SWITCH
@@ -1454,21 +1443,11 @@ void changeSwitchStatusTouch(uint8_t y)
 	{
 		if(SwitchesButtonState[1] >= 1) // if is ON
 		{
-			SendComand(UCMD_RELAY_2_OFF); // Send comannd to OFF
-			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_2_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			SwitchesButtonState[1] = 0;
-			EEPROM_RelayStateUpdate(2, 0);
+			secondSwitchTurn(0);
 		}
 		else // if is OFF
 		{
-			SendComand(UCMD_RELAY_2_ON); // Send comannd to ON
-			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_2_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
-			SwitchesButtonState[1] = 1;
-			EEPROM_RelayStateUpdate(2, 1);
+			secondSwitchTurn(1);
 		}
 	}
 	//
@@ -1477,21 +1456,11 @@ void changeSwitchStatusTouch(uint8_t y)
 	{
 		if(SwitchesButtonState[2] >= 1) // if is ON
 		{
-			SendComand(UCMD_RELAY_3_OFF); // Send comannd to OFF
-			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_3_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			SwitchesButtonState[2] = 0;
-			EEPROM_RelayStateUpdate(3, 0);
+			thirdSwitchTurn(0);
 		}
 		else // if is OFF
 		{
-			SendComand(UCMD_RELAY_3_ON); // Send comannd to ON
-			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_3_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
-			SwitchesButtonState[2] = 1;
-			EEPROM_RelayStateUpdate(3, 1);
+			thirdSwitchTurn(1);
 		}
 	}
 	//
@@ -1500,21 +1469,11 @@ void changeSwitchStatusTouch(uint8_t y)
 	{
 		if(SwitchesButtonState[3] >= 1) // if is ON
 		{
-			SendComand(UCMD_RELAY_4_OFF); // Send comannd to OFF
-			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_4_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			SwitchesButtonState[3] = 0;
-			EEPROM_RelayStateUpdate(4, 0);
+			fourthSwitchTurn(0);
 		}
 		else // if is OFF
 		{
-			SendComand(UCMD_RELAY_4_ON); // Send comannd to ON
-			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_4_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
-			SwitchesButtonState[3] = 1;
-			EEPROM_RelayStateUpdate(4, 1);
+			fourthSwitchTurn(1);
 		}
 	}
 	EF_SetFont(&arialBlack_20ptFontInfo);
@@ -1531,21 +1490,11 @@ void changeLightsStatusTouch(uint8_t y)
 	{
 		if(LightsButtonState[0] >= 1) // if is ON
 		{
-			SendComand(UCMD_LIGHT_1_OFF); // Send comannd to OFF
-			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_1_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			LightsButtonState[0] = 0;
-			EEPROM_LightStateUpdate(1, 0);
+			firstLightTurn(0);
 		}
 		else // if is OFF
 		{
-			SendComand(UCMD_LIGHT_1_ON); // Send comannd to ON
-			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_1_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			LightsButtonState[0] = 1;
-			EEPROM_LightStateUpdate(1, 1);
+			firstLightTurn(1);
 		}
 	}
 	//
@@ -1554,21 +1503,11 @@ void changeLightsStatusTouch(uint8_t y)
 	{
 		if(LightsButtonState[1] >= 1) // if is ON
 		{
-			SendComand(UCMD_LIGHT_2_OFF); // Send comannd to OFF
-			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_2_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			LightsButtonState[1] = 0;
-			EEPROM_LightStateUpdate(2, 0);
+			secondLightTurn(0);
 		}
 		else // if is OFF
 		{
-			SendComand(UCMD_LIGHT_2_ON); // Send comannd to ON
-			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_2_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			LightsButtonState[1] = 1;
-			EEPROM_LightStateUpdate(2, 1);
+			secondLightTurn(1);
 		}
 	}
 
@@ -1578,21 +1517,11 @@ void changeLightsStatusTouch(uint8_t y)
 	{
 		if(LightsButtonState[2] >= 1) // if is ON
 		{
-			SendComand(UCMD_LIGHT_3_OFF); // Send comannd to OFF
-			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_3_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			LightsButtonState[2] = 0;
-			EEPROM_LightStateUpdate(3, 0);
+			thirdLightTurn(0);
 		}
 		else // if is OFF
 		{
-			SendComand(UCMD_LIGHT_3_ON); // Send comannd to ON
-			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_3_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			LightsButtonState[2] = 1;
-			EEPROM_LightStateUpdate(3, 1);
+			thirdLightTurn(1);
 		}
 	}
 
@@ -1602,21 +1531,11 @@ void changeLightsStatusTouch(uint8_t y)
 	{
 		if(LightsButtonState[3] >= 1) // if is ON
 		{
-			SendComand(UCMD_LIGHT_4_OFF); // Send comannd to OFF
-			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_4_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			LightsButtonState[3] = 0;
-			EEPROM_LightStateUpdate(4, 0);
+			fourthLightTurn(0);
 		}
 		else // if is OFF
 		{
-			SendComand(UCMD_LIGHT_4_ON); // Send comannd to ON
-			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_4_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			LightsButtonState[3] = 1;
-			EEPROM_LightStateUpdate(4, 1);
+			fourthLightTurn(1);
 		}
 	}
 	EF_SetFont(&arialBlack_20ptFontInfo);
@@ -1794,5 +1713,180 @@ void changeTypeOfWSLights(uint8_t x, uint8_t y)
 		{
 			SendComand(UCMD_WS_ANIMATION_SUNSET);
 		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////
+//
+// Functions to change state of relays to manage switches and lights
+//
+void firstSwitchTurn(uint8_t NewState)
+{
+	if(0 == NewState) //Turn OFF
+	{
+		SendComand(UCMD_RELAY_1_OFF); // Send comannd to OFF
+		GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_1_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
+		sprintf((char*)Msg, "OFF");
+		EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		SwitchesButtonState[0] = 0;
+		EEPROM_RelayStateUpdate(1, 0);
+	}
+	else //Turn ON
+	{
+		SendComand(UCMD_RELAY_1_ON); // Send comannd to ON
+		GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_1_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
+		sprintf((char*)Msg, "ON");
+		EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
+		SwitchesButtonState[0] = 1;
+		EEPROM_RelayStateUpdate(1, 1);
+	}
+}
+void secondSwitchTurn(uint8_t NewState)
+{
+	if(0 == NewState) //Turn OFF
+	{
+		SendComand(UCMD_RELAY_2_OFF); // Send comannd to OFF
+		GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_2_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
+		sprintf((char*)Msg, "OFF");
+		EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		SwitchesButtonState[1] = 0;
+		EEPROM_RelayStateUpdate(2, 0);
+	}
+	else //Turn ON
+	{
+		SendComand(UCMD_RELAY_2_ON); // Send comannd to ON
+		GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_2_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
+		sprintf((char*)Msg, "ON");
+		EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
+		SwitchesButtonState[1] = 1;
+		EEPROM_RelayStateUpdate(2, 1);
+	}
+}
+void thirdSwitchTurn(uint8_t NewState)
+{
+	if(0 == NewState) //Turn OFF
+	{
+		SendComand(UCMD_RELAY_3_OFF); // Send comannd to OFF
+		GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_3_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
+		sprintf((char*)Msg, "OFF");
+		EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		SwitchesButtonState[2] = 0;
+		EEPROM_RelayStateUpdate(3, 0);
+	}
+	else //Turn ON
+	{
+		SendComand(UCMD_RELAY_3_ON); // Send comannd to ON
+		GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_3_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
+		sprintf((char*)Msg, "ON");
+		EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
+		SwitchesButtonState[2] = 1;
+		EEPROM_RelayStateUpdate(3, 1);
+	}
+}
+void fourthSwitchTurn(uint8_t NewState)
+{
+	if(0 == NewState) //Turn OFF
+	{
+		SendComand(UCMD_RELAY_4_OFF); // Send comannd to OFF
+		GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_4_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
+		sprintf((char*)Msg, "OFF");
+		EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		SwitchesButtonState[3] = 0;
+		EEPROM_RelayStateUpdate(4, 0);
+	}
+	else //Turn ON
+	{
+		SendComand(UCMD_RELAY_4_ON); // Send comannd to ON
+		GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_4_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
+		sprintf((char*)Msg, "ON");
+		EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
+		SwitchesButtonState[3] = 1;
+		EEPROM_RelayStateUpdate(4, 1);
+	}
+}
+
+
+void firstLightTurn(uint8_t NewState)
+{
+	if(0 == NewState) //Turn OFF
+	{
+		SendComand(UCMD_LIGHT_1_OFF); // Send comannd to OFF
+		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_1_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
+		sprintf((char*)Msg, "OFF");
+		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		LightsButtonState[0] = 0;
+		EEPROM_LightStateUpdate(1, 0);
+	}
+	else //Turn ON
+	{
+		SendComand(UCMD_LIGHT_1_ON); // Send comannd to ON
+		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_1_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
+		sprintf((char*)Msg, "ON");
+		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		LightsButtonState[0] = 1;
+		EEPROM_LightStateUpdate(1, 1);
+	}
+}
+void secondLightTurn(uint8_t NewState)
+{
+	if(0 == NewState) //Turn OFF
+	{
+		SendComand(UCMD_LIGHT_2_OFF); // Send comannd to OFF
+		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_2_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
+		sprintf((char*)Msg, "OFF");
+		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		LightsButtonState[1] = 0;
+		EEPROM_LightStateUpdate(2, 0);
+	}
+	else //Turn ON
+	{
+		SendComand(UCMD_LIGHT_2_ON); // Send comannd to ON
+		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_2_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
+		sprintf((char*)Msg, "ON");
+		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		LightsButtonState[1] = 1;
+		EEPROM_LightStateUpdate(2, 1);
+	}
+}
+void thirdLightTurn(uint8_t NewState)
+{
+	if(0 == NewState) //Turn OFF
+	{
+		SendComand(UCMD_LIGHT_3_OFF); // Send comannd to OFF
+		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_3_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
+		sprintf((char*)Msg, "OFF");
+		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		LightsButtonState[2] = 0;
+		EEPROM_LightStateUpdate(3, 0);
+	}
+	else //Turn ON
+	{
+		SendComand(UCMD_LIGHT_3_ON); // Send comannd to ON
+		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_3_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
+		sprintf((char*)Msg, "ON");
+		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		LightsButtonState[2] = 1;
+		EEPROM_LightStateUpdate(3, 1);
+	}
+}
+void fourthLightTurn(uint8_t NewState)
+{
+	if(0 == NewState) //Turn OFF
+	{
+		SendComand(UCMD_LIGHT_4_OFF); // Send comannd to OFF
+		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_4_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
+		sprintf((char*)Msg, "OFF");
+		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		LightsButtonState[3] = 0;
+		EEPROM_LightStateUpdate(4, 0);
+	}
+	else //Turn ON
+	{
+		SendComand(UCMD_LIGHT_4_ON); // Send comannd to ON
+		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_4_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
+		sprintf((char*)Msg, "ON");
+		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+		LightsButtonState[3] = 1;
+		EEPROM_LightStateUpdate(4, 1);
 	}
 }

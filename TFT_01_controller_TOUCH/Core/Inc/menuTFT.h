@@ -222,5 +222,14 @@ void predefinedActivityTouchAction(uint8_t y);
 void increaseNumberOfWSLedOnTFT(uint8_t x, uint8_t y);
 void changeTypeOfWSLights(uint8_t x, uint8_t y);
 
+void firstSwitchTurn(uint8_t NewState);
+void secondSwitchTurn(uint8_t NewState);
+void thirdSwitchTurn(uint8_t NewState);
+void fourthSwitchTurn(uint8_t NewState);
+
+void firstLightTurn(uint8_t NewState);
+void secondLightTurn(uint8_t NewState);
+void thirdLightTurn(uint8_t NewState);
+void fourthLightTurn(uint8_t NewState);
 
 #endif /* INC_MENUTFT_H_ */
