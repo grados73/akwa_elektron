@@ -18,6 +18,8 @@
 #include "stdio.h"
 #include "functions.h"
 #include "stdbool.h"
+#include "menuTFT.h"
+#include "stdlib.h"
 
 #define BUFFOR_SIZE 65
 

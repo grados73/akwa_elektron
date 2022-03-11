@@ -181,7 +181,7 @@ int main(void)
 	  //
 	  if(UARTDMA_IsDataReceivedReady(&huartdma1))
 	  {
-		  // Parsing function
+		  UART_ESP_ParseLine(&huartdma1); // Parsing function
 	  }
 
 	  //
