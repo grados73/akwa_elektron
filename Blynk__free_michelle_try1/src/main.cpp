@@ -23,17 +23,14 @@
 
 char auth[] = BLYNK_AUTH_TOKEN;
 
-#define TELEPHONE_HOTSPOT 1
+#define TELEPHONE_HOTSPOT 0
 
 // Your WiFi credentials.
 // Set password to "" for open networks.
-#ifdef TELEPHONE_HOTSPOT
-char ssid[] = "Cisco_mil_net";
-char pass[] = "12345789";
-#else
+
 char ssid[] = "SuperExtraSzybkiInternetZuzy"; 
 char pass[] = "gradowscy6";
-#endif
+
 
 
 WidgetLED led1(V1);
@@ -61,6 +58,10 @@ RelayClass Relay1;
 RelayClass Relay2;
 RelayClass Relay3;
 RelayClass Relay4;
+RelayClass Relay5;
+RelayClass Relay6;
+RelayClass Relay7;
+RelayClass Relay8;
 
 BLYNK_CONNECTED() {
   //get data stored in virtual pin V0 from server
@@ -68,6 +69,10 @@ BLYNK_CONNECTED() {
   Blynk.syncVirtual(V9);
   Blynk.syncVirtual(V10);
   Blynk.syncVirtual(V11);
+  Blynk.syncVirtual(V14);
+  Blynk.syncVirtual(V15);
+  Blynk.syncVirtual(V16);
+  Blynk.syncVirtual(V17);
 
   #if DEBUGING_MODE
   Serial.print("RSTATE=");
@@ -75,6 +80,10 @@ BLYNK_CONNECTED() {
   Serial.print(Relay2.State);
   Serial.print(Relay3.State);
   Serial.print(Relay4.State);
+  Serial.print(Relay5.State);
+  Serial.print(Relay6.State);
+  Serial.print(Relay7.State);
+  Serial.print(Relay8.State);
   Serial.print("\n");
   #endif
 }
@@ -107,6 +116,38 @@ BLYNK_WRITE(V11) //Button Widget is writing to pin V11 - Relay4
   Serial.print(Relay4.State);
   Serial.print("\n");
 }
+
+BLYNK_WRITE(V14) //Button Widget is writing to pin V14 - Light1
+{
+  Relay4.State = param.asInt(); 
+  Serial.print("CHRELAY=5,");
+  Serial.print(Relay4.State);
+  Serial.print("\n");
+}
+BLYNK_WRITE(V15) //Button Widget is writing to pin V15 - Light2
+{
+  Relay4.State = param.asInt(); 
+  Serial.print("CHRELAY=6,");
+  Serial.print(Relay4.State);
+  Serial.print("\n");
+}
+
+BLYNK_WRITE(V16) //Button Widget is writing to pin V16 - Light3
+{
+  Relay4.State = param.asInt(); 
+  Serial.print("CHRELAY=7,");
+  Serial.print(Relay4.State);
+  Serial.print("\n");
+}
+
+BLYNK_WRITE(V17) //Button Widget is writing to pin V17 - Light4
+{
+  Relay4.State = param.asInt(); 
+  Serial.print("CHRELAY=8,");
+  Serial.print(Relay4.State);
+  Serial.print("\n");
+}
+
 
 void setup()
 {
@@ -189,6 +230,18 @@ void SendDataToBlynk(uint8_t CommandID)
         case 4:
           Blynk.virtualWrite(V11, 1);
           break;
+        case 5:
+          Blynk.virtualWrite(V14, 1);
+          break;
+        case 6:
+          Blynk.virtualWrite(V15, 1);
+          break;
+        case 7:
+          Blynk.virtualWrite(V16, 1);
+          break;
+        case 8:
+          Blynk.virtualWrite(V17, 1);
+          break;                              
         default:
           break;
       }
@@ -209,6 +262,18 @@ void SendDataToBlynk(uint8_t CommandID)
         case 4:
           Blynk.virtualWrite(V11, 0);
           break;
+        case 5:
+          Blynk.virtualWrite(V14, 0);
+          break;
+        case 6:
+          Blynk.virtualWrite(V15, 0);
+          break;
+        case 7:
+          Blynk.virtualWrite(V16, 0);
+          break;
+        case 8:
+          Blynk.virtualWrite(V17, 0);
+          break; 
         default:
           break;
       }

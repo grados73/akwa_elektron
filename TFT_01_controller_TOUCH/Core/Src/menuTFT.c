@@ -1821,7 +1821,7 @@ void firstLightTurn(uint8_t NewState)
 	if(0 == NewState) //Turn OFF
 	{
 		SendComand(UCMD_LIGHT_1_OFF); // Send comannd to OFF
-		UARTDMA_Print(&huartdma1, "LIGHTOFF=1\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYOFF=5\n"); // Print message to ESP
 		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_1_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
 		sprintf((char*)Msg, "OFF");
 		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
@@ -1831,7 +1831,7 @@ void firstLightTurn(uint8_t NewState)
 	else //Turn ON
 	{
 		SendComand(UCMD_LIGHT_1_ON); // Send comannd to ON
-		UARTDMA_Print(&huartdma1, "LIGHTON=1\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYON=5\n"); // Print message to ESP
 		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_1_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
 		sprintf((char*)Msg, "ON");
 		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
@@ -1844,7 +1844,7 @@ void secondLightTurn(uint8_t NewState)
 	if(0 == NewState) //Turn OFF
 	{
 		SendComand(UCMD_LIGHT_2_OFF); // Send comannd to OFF
-		UARTDMA_Print(&huartdma1, "LIGHTOFF=2\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYOFF=6\n"); // Print message to ESP
 		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_2_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
 		sprintf((char*)Msg, "OFF");
 		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
@@ -1854,7 +1854,7 @@ void secondLightTurn(uint8_t NewState)
 	else //Turn ON
 	{
 		SendComand(UCMD_LIGHT_2_ON); // Send comannd to ON
-		UARTDMA_Print(&huartdma1, "LIGHTON=2\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYON=6\n"); // Print message to ESP
 		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_2_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
 		sprintf((char*)Msg, "ON");
 		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
@@ -1867,7 +1867,7 @@ void thirdLightTurn(uint8_t NewState)
 	if(0 == NewState) //Turn OFF
 	{
 		SendComand(UCMD_LIGHT_3_OFF); // Send comannd to OFF
-		UARTDMA_Print(&huartdma1, "LIGHTOFF=3\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYOFF=7\n"); // Print message to ESP
 		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_3_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
 		sprintf((char*)Msg, "OFF");
 		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
@@ -1877,7 +1877,7 @@ void thirdLightTurn(uint8_t NewState)
 	else //Turn ON
 	{
 		SendComand(UCMD_LIGHT_3_ON); // Send comannd to ON
-		UARTDMA_Print(&huartdma1, "LIGHTON=3\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYON=7\n"); // Print message to ESP
 		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_3_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
 		sprintf((char*)Msg, "ON");
 		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
@@ -1890,7 +1890,7 @@ void fourthLightTurn(uint8_t NewState)
 	if(0 == NewState) //Turn OFF
 	{
 		SendComand(UCMD_LIGHT_4_OFF); // Send comannd to OFF
-		UARTDMA_Print(&huartdma1, "LIGHTOFF=4\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYOFF=8\n"); // Print message to ESP
 		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_4_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
 		sprintf((char*)Msg, "OFF");
 		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
@@ -1900,7 +1900,7 @@ void fourthLightTurn(uint8_t NewState)
 	else //Turn ON
 	{
 		SendComand(UCMD_LIGHT_4_ON); // Send comannd to ON
-		UARTDMA_Print(&huartdma1, "LIGHTON=4\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYON=8\n"); // Print message to ESP
 		GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_4_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
 		sprintf((char*)Msg, "ON");
 		EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);

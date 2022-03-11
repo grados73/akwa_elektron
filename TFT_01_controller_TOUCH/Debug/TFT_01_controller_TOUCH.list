@@ -18693,7 +18693,7 @@ void firstLightTurn(uint8_t NewState)
 		SendComand(UCMD_LIGHT_1_OFF); // Send comannd to OFF
  80084fc:	200e      	movs	r0, #14
  80084fe:	f000 fc9b 	bl	8008e38 <SendComand>
-		UARTDMA_Print(&huartdma1, "LIGHTOFF=1\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYOFF=5\n"); // Print message to ESP
  8008502:	4929      	ldr	r1, [pc, #164]	; (80085a8 <firstLightTurn+0xbc>)
  8008504:	4829      	ldr	r0, [pc, #164]	; (80085ac <firstLightTurn+0xc0>)
  8008506:	f001 fbbf 	bl	8009c88 <UARTDMA_Print>
@@ -18739,7 +18739,7 @@ void firstLightTurn(uint8_t NewState)
 		SendComand(UCMD_LIGHT_1_ON); // Send comannd to ON
  800854e:	200d      	movs	r0, #13
  8008550:	f000 fc72 	bl	8008e38 <SendComand>
-		UARTDMA_Print(&huartdma1, "LIGHTON=1\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYON=5\n"); // Print message to ESP
  8008554:	4919      	ldr	r1, [pc, #100]	; (80085bc <firstLightTurn+0xd0>)
  8008556:	4815      	ldr	r0, [pc, #84]	; (80085ac <firstLightTurn+0xc0>)
  8008558:	f001 fb96 	bl	8009c88 <UARTDMA_Print>
@@ -18805,7 +18805,7 @@ void secondLightTurn(uint8_t NewState)
 		SendComand(UCMD_LIGHT_2_OFF); // Send comannd to OFF
  80085d4:	2010      	movs	r0, #16
  80085d6:	f000 fc2f 	bl	8008e38 <SendComand>
-		UARTDMA_Print(&huartdma1, "LIGHTOFF=2\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYOFF=6\n"); // Print message to ESP
  80085da:	4929      	ldr	r1, [pc, #164]	; (8008680 <secondLightTurn+0xbc>)
  80085dc:	4829      	ldr	r0, [pc, #164]	; (8008684 <secondLightTurn+0xc0>)
  80085de:	f001 fb53 	bl	8009c88 <UARTDMA_Print>
@@ -18851,7 +18851,7 @@ void secondLightTurn(uint8_t NewState)
 		SendComand(UCMD_LIGHT_2_ON); // Send comannd to ON
  8008626:	200f      	movs	r0, #15
  8008628:	f000 fc06 	bl	8008e38 <SendComand>
-		UARTDMA_Print(&huartdma1, "LIGHTON=2\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYON=6\n"); // Print message to ESP
  800862c:	4919      	ldr	r1, [pc, #100]	; (8008694 <secondLightTurn+0xd0>)
  800862e:	4815      	ldr	r0, [pc, #84]	; (8008684 <secondLightTurn+0xc0>)
  8008630:	f001 fb2a 	bl	8009c88 <UARTDMA_Print>
@@ -18917,7 +18917,7 @@ void thirdLightTurn(uint8_t NewState)
 		SendComand(UCMD_LIGHT_3_OFF); // Send comannd to OFF
  80086ac:	2012      	movs	r0, #18
  80086ae:	f000 fbc3 	bl	8008e38 <SendComand>
-		UARTDMA_Print(&huartdma1, "LIGHTOFF=3\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYOFF=7\n"); // Print message to ESP
  80086b2:	4929      	ldr	r1, [pc, #164]	; (8008758 <thirdLightTurn+0xbc>)
  80086b4:	4829      	ldr	r0, [pc, #164]	; (800875c <thirdLightTurn+0xc0>)
  80086b6:	f001 fae7 	bl	8009c88 <UARTDMA_Print>
@@ -18963,7 +18963,7 @@ void thirdLightTurn(uint8_t NewState)
 		SendComand(UCMD_LIGHT_3_ON); // Send comannd to ON
  80086fe:	2011      	movs	r0, #17
  8008700:	f000 fb9a 	bl	8008e38 <SendComand>
-		UARTDMA_Print(&huartdma1, "LIGHTON=3\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYON=7\n"); // Print message to ESP
  8008704:	4919      	ldr	r1, [pc, #100]	; (800876c <thirdLightTurn+0xd0>)
  8008706:	4815      	ldr	r0, [pc, #84]	; (800875c <thirdLightTurn+0xc0>)
  8008708:	f001 fabe 	bl	8009c88 <UARTDMA_Print>
@@ -19029,7 +19029,7 @@ void fourthLightTurn(uint8_t NewState)
 		SendComand(UCMD_LIGHT_4_OFF); // Send comannd to OFF
  8008784:	2014      	movs	r0, #20
  8008786:	f000 fb57 	bl	8008e38 <SendComand>
-		UARTDMA_Print(&huartdma1, "LIGHTOFF=4\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYOFF=8\n"); // Print message to ESP
  800878a:	4929      	ldr	r1, [pc, #164]	; (8008830 <fourthLightTurn+0xbc>)
  800878c:	4829      	ldr	r0, [pc, #164]	; (8008834 <fourthLightTurn+0xc0>)
  800878e:	f001 fa7b 	bl	8009c88 <UARTDMA_Print>
@@ -19075,7 +19075,7 @@ void fourthLightTurn(uint8_t NewState)
 		SendComand(UCMD_LIGHT_4_ON); // Send comannd to ON
  80087d6:	2013      	movs	r0, #19
  80087d8:	f000 fb2e 	bl	8008e38 <SendComand>
-		UARTDMA_Print(&huartdma1, "LIGHTON=4\n"); // Print message to ESP
+		UARTDMA_Print(&huartdma1, "RELAYON=8\n"); // Print message to ESP
  80087dc:	4919      	ldr	r1, [pc, #100]	; (8008844 <fourthLightTurn+0xd0>)
  80087de:	4815      	ldr	r0, [pc, #84]	; (8008834 <fourthLightTurn+0xc0>)
  80087e0:	f001 fa52 	bl	8009c88 <UARTDMA_Print>
