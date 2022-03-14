@@ -1050,7 +1050,7 @@ void restoreTFTScheduleRelayLights(uint8_t NrOfSchedule)
 
 void makeScheduleActivity(uint8_t CurrentHour, uint8_t CurrentMinute, uint8_t CurrentDayOfWeek)
 {
-	// Check if some relays should be turn on
+
 	for(uint8_t i = 1 ; i <= NumberOfSchedules ; i++ ) // 'i' is a number of checking schedule
 	{
 		uint8_t ScheduleDayOfWeekTab[7]= {0}; // Tab to handle information about day of the week to which the schedule applies
@@ -1058,15 +1058,29 @@ void makeScheduleActivity(uint8_t CurrentHour, uint8_t CurrentMinute, uint8_t Cu
 
 		if(1 == ScheduleDayOfWeekTab[CurrentDayOfWeek]) // If the current day of week the schedule 'i' applies
 		{
+			// Check if some relays should be turn on
 			uint8_t HourOnFromEEPROM = 27;
 			EEPROM_ScheduleHourOnRead(i, &HourOnFromEEPROM); // Get set Hour ON from EEPROM
 			if(CurrentHour == HourOnFromEEPROM)
 			{
 				uint8_t MinuteOnFromEEPROM = 67;
 				EEPROM_ScheduleMinuteOnRead(i, &MinuteOnFromEEPROM); // Get set Minute ON from EEPROM
-				if(CurrentMinute == MinuteOnFromEEPROM) // If Hour, Minute and Day of Week is OK
+				if(CurrentMinute == MinuteOnFromEEPROM) // If Hour, Minute and Day of Week is set in this schedule
 				{
 					makeRelayOn(i);
+				}
+			}
+
+			// Check if some relays should be turn off
+			uint8_t HourOfFromEEPROM = 27;
+			EEPROM_ScheduleHourOffRead(i, &HourOfFromEEPROM);
+			if(CurrentHour == HourOfFromEEPROM)
+			{
+				uint8_t MinuteOffFromEEPROM = 67;
+				EEPROM_ScheduleMinuteOffRead(i, &MinuteOffFromEEPROM);
+				if(CurrentMinute == MinuteOffFromEEPROM) // If Hour, Minute and Day of Week is set in this schedule
+				{
+					makeRelayOff(i);
 				}
 			}
 		}
