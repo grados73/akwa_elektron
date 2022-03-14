@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00040214  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000255e2  00000000  00000000  00040244  2**0
+ 12 .debug_info   00025712  00000000  00000000  00040244  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00004d81  00000000  00000000  00065826  2**0
+ 13 .debug_abbrev 00004d9b  00000000  00000000  00065956  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00001a58  00000000  00000000  0006a5a8  2**3
+ 14 .debug_aranges 00001a70  00000000  00000000  0006a6f8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000018a8  00000000  00000000  0006c000  2**3
+ 15 .debug_ranges 000018c0  00000000  00000000  0006c168  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001c6ee  00000000  00000000  0006d8a8  2**0
+ 16 .debug_macro  0001c6f4  00000000  00000000  0006da28  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00026e6d  00000000  00000000  00089f96  2**0
+ 17 .debug_line   00026efe  00000000  00000000  0008a11c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00099715  00000000  00000000  000b0e03  2**0
+ 18 .debug_str    000997fe  00000000  00000000  000b101a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  0014a518  2**0
+ 19 .comment      00000053  00000000  00000000  0014a818  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000081d0  00000000  00000000  0014a56c  2**2
+ 20 .debug_frame  0000823c  00000000  00000000  0014a86c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -11465,6 +11465,7 @@ void restoreTFTScheduleRelayLights(uint8_t NrOfSchedule)
  8005676:	bd80      	pop	{r7, pc}
 
 08005678 <initWait>:
+}
 
 //
 // Function to wait but only if it is necessary
@@ -12577,6 +12578,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  8005d30:	4293      	cmp	r3, r2
  8005d32:	d117      	bne.n	8005d64 <HAL_TIM_PeriodElapsedCallback+0x50>
 	{
+		//TODO! Make possibility to change FEEDING_TIME_IN_S
 		if(FeedingCounter >= FEEDING_TIME_IN_S) // timer to count seconds from start feeding to turn off this activity
  8005d34:	4b0f      	ldr	r3, [pc, #60]	; (8005d74 <HAL_TIM_PeriodElapsedCallback+0x60>)
  8005d36:	781b      	ldrb	r3, [r3, #0]
@@ -12687,7 +12689,7 @@ void Error_Handler(void)
  8005dd6:	480f      	ldr	r0, [pc, #60]	; (8005e14 <Error_Handler+0x6c>)
  8005dd8:	f7fb ffe2 	bl	8001da0 <EF_PutString>
 	sprintf((char*)Msg, "Function: %s, Line: %d\n",__func__, (int)__LINE__);
- 8005ddc:	f240 1345 	movw	r3, #325	; 0x145
+ 8005ddc:	f44f 73a3 	mov.w	r3, #326	; 0x146
  8005de0:	4a0d      	ldr	r2, [pc, #52]	; (8005e18 <Error_Handler+0x70>)
  8005de2:	490e      	ldr	r1, [pc, #56]	; (8005e1c <Error_Handler+0x74>)
  8005de4:	480b      	ldr	r0, [pc, #44]	; (8005e14 <Error_Handler+0x6c>)

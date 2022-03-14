@@ -280,6 +280,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 	if(htim->Instance == TIM10) // Update even each second - one per second 1/s
 	{
+		//TODO! Make possibility to change FEEDING_TIME_IN_S
 		if(FeedingCounter >= FEEDING_TIME_IN_S) // timer to count seconds from start feeding to turn off this activity
 		{
 			HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);

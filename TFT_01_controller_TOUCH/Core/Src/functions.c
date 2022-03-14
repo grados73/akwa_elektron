@@ -35,6 +35,8 @@ uint8_t OldHours = 0;
 uint8_t OldMinutes = 0;
 static uint32_t LastTime = 0;
 
+uint8_t NumberOfSchedules = NUMBER_OF_AVAILABLE_SCHEDULES;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1043,6 +1045,46 @@ void restoreTFTScheduleRelayLights(uint8_t NrOfSchedule)
 	if(TempRelayLIghtsTab[8]) changeTFTScheduleRelayLights(9, 1);
 	else changeTFTScheduleRelayLights(9, 0);
 
+}
+
+
+void makeScheduleActivity(uint8_t CurrentHour, uint8_t CurrentMinute, uint8_t CurrentDayOfWeek)
+{
+	// Check if some relays should be turn on
+	for(uint8_t i = 1 ; i <= NumberOfSchedules ; i++ ) // 'i' is a number of checking schedule
+	{
+		uint8_t ScheduleDayOfWeekTab[7]= {0}; // Tab to handle information about day of the week to which the schedule applies
+		EEPROM_ScheduleDayInWeekRead(i, ScheduleDayOfWeekTab); // Get day of week from 'i' Schedule
+
+		if(1 == ScheduleDayOfWeekTab[CurrentDayOfWeek]) // If the current day of week the schedule 'i' applies
+		{
+			uint8_t HourOnFromEEPROM = 27;
+			EEPROM_ScheduleHourOnRead(i, &HourOnFromEEPROM); // Get set Hour ON from EEPROM
+			if(CurrentHour == HourOnFromEEPROM)
+			{
+				uint8_t MinuteOnFromEEPROM = 67;
+				EEPROM_ScheduleMinuteOnRead(i, &MinuteOnFromEEPROM); // Get set Minute ON from EEPROM
+				if(CurrentMinute == MinuteOnFromEEPROM) // If Hour, Minute and Day of Week is OK
+				{
+					makeRelayOn(i);
+				}
+			}
+		}
+	}
+}
+
+void makeRelayOn(uint8_t NumberOfShedule)
+{
+		uint8_t ScheduleRelayApplies[9] = {0};  // { R1, R2, R3, R4, WS, L1, L2, L3, L4}
+		EEPROM_ScheduleRelayAndSwitchTabRead(NumberOfShedule, ScheduleRelayApplies);
+		//TODO!...
+}
+
+void makeRelayOff(uint8_t NumberOfShedule)
+{
+		uint8_t ScheduleRelayApplies[9] = {0};  // { R1, R2, R3, R4, WS, L1, L2, L3, L4}
+		EEPROM_ScheduleRelayAndSwitchTabRead(NumberOfShedule, ScheduleRelayApplies);
+		//TODO!...
 }
 
 //

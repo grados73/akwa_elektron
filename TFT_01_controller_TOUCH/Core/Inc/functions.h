@@ -108,6 +108,9 @@
 #define HEADER_UNDERLINE_POZ_Y 41
 #define HEADER_UNDERLINE_COLOR ILI9341_ORANGE
 
+
+#define NUMBER_OF_AVAILABLE_SCHEDULES 2
+
 uint8_t Msg[64]; // Message to receive/send UART
 
 //
@@ -134,6 +137,11 @@ void drawSchedulePanel(uint8_t NrOfSchedule);
 
 void restoreTFTScheduleDayOfWeek(uint8_t NrOfSchedule);
 void restoreTFTScheduleRelayLights(uint8_t NrOfSchedule);
+
+// temporary in .h
+void makeScheduleActivity(uint8_t CurrentHour, uint8_t CurrentMinute, uint8_t CurrentDayOfWeek);
+void makeRelayOn(uint8_t NumberOfShedule);
+void makeRelayOff(uint8_t NumberOfShedule);
 
 
 #endif /* INC_FUNCTIONS_H_ */
