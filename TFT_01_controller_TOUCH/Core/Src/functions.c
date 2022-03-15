@@ -764,6 +764,7 @@ void ChangeHourOnScreen()
 {
 	  uint8_t CHour = DS3231_GetHour();
 	  uint8_t CMinute = DS3231_GetMinute();
+
 	  EF_SetFont(&arialBlack_20ptFontInfo);
 
 	  //
@@ -781,13 +782,16 @@ void ChangeHourOnScreen()
 				  sprintf((char*)Msg, " %d", CHour);
 			  }
 			  EF_PutString(Msg, CZAS_POZ_X + 77 , CZAS_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
-			  OldHours = CHour;
 		  }
+		  OldHours = CHour;
 	  }
 	  //
 	  // Change MINUTES
 	  if(CMinute != OldMinutes)
 	  {
+		  uint8_t  CDayOfWeek = DS3231_GetDayOfWeek();
+		//  makeScheduleActivity(CHour, CMinute, CDayOfWeek); // Check if changed hour and minute are set in schedules
+
 		  if(State == MENUTFT_PARAMETERS)
 		  {
 			  if(CMinute < 10)
@@ -800,8 +804,8 @@ void ChangeHourOnScreen()
 			  }
 
 			  EF_PutString(Msg, CZAS_POZ_X + 130 , CZAS_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
-			  OldMinutes = CMinute;
 		  }
+		  OldMinutes = CMinute;
 	  }
 
 }
@@ -1091,37 +1095,32 @@ void makeRelayOn(uint8_t NumberOfShedule)
 {
 		uint8_t ScheduleRelayAppliesTab[9] = {0};  // { R1, R2, R3, R4, WS, L1, L2, L3, L4}
 		EEPROM_ScheduleRelayAndSwitchTabRead(NumberOfShedule, ScheduleRelayAppliesTab);
-		for(uint8_t i = 0 ; i <=8 ; i++)
-		{
+
 			if(ScheduleRelayAppliesTab[0] == 1) firstSwitchTurn(1);
 			if(ScheduleRelayAppliesTab[1] == 1) secondSwitchTurn(1);
 			if(ScheduleRelayAppliesTab[2] == 1) thirdSwitchTurn(1);
 			if(ScheduleRelayAppliesTab[3] == 1) fourthSwitchTurn(1);
-			if(ScheduleRelayAppliesTab[3] == 1) // TODO! WS OFF
+			//if(ScheduleRelayAppliesTab[4] == 1) ; // TODO! WS OFF
 			if(ScheduleRelayAppliesTab[5] == 1) firstLightTurn(1);
 			if(ScheduleRelayAppliesTab[6] == 1) secondLightTurn(1);
 			if(ScheduleRelayAppliesTab[7] == 1) thirdLightTurn(1);
 			if(ScheduleRelayAppliesTab[8] == 1) fourthLightTurn(1);
-		}
-
 }
 
 void makeRelayOff(uint8_t NumberOfShedule)
 {
 		uint8_t ScheduleRelayAppliesTab[9] = {0};  // { R1, R2, R3, R4, WS, L1, L2, L3, L4}
 		EEPROM_ScheduleRelayAndSwitchTabRead(NumberOfShedule, ScheduleRelayAppliesTab);
-		for(uint8_t i = 0 ; i <=8 ; i++)
-		{
 			if(ScheduleRelayAppliesTab[0] == 1) firstSwitchTurn(0);
 			if(ScheduleRelayAppliesTab[1] == 1) secondSwitchTurn(0);
 			if(ScheduleRelayAppliesTab[2] == 1) thirdSwitchTurn(0);
 			if(ScheduleRelayAppliesTab[3] == 1) fourthSwitchTurn(0);
-			if(ScheduleRelayAppliesTab[3] == 1) // TODO! WS ON
+			//if(ScheduleRelayAppliesTab[4] == 1) ; // TODO! WS ON
 			if(ScheduleRelayAppliesTab[5] == 1) firstLightTurn(0);
 			if(ScheduleRelayAppliesTab[6] == 1) secondLightTurn(0);
 			if(ScheduleRelayAppliesTab[7] == 1) thirdLightTurn(0);
 			if(ScheduleRelayAppliesTab[8] == 1) fourthLightTurn(0);
-		}
+
 }
 
 //

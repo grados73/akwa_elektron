@@ -139,8 +139,6 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
   //
-  //Timer START
-  HAL_TIM_Base_Start_IT(&htim11);
   // TFT controller INIT
   ILI9341_Init(&hspi1);
   // UART in DMA mode with use RingBuffer INIT
@@ -156,6 +154,8 @@ int main(void)
   uint8_t result = 0;
   eeprom_read(0x01, &result, sizeof(result));
 
+  //Timer START
+  HAL_TIM_Base_Start_IT(&htim11);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -304,7 +304,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	if(GPIO_Pin == IRQ_DS3231_RTC_Pin) // Interrupt from RTC - alarm one per minute
 	{
 		DS3231_ClearAlarm2Flag();
-
 	}
 }
 
