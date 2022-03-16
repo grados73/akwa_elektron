@@ -48,7 +48,8 @@ uint8_t minuteOffSchedule2 = 0;
 
 extern UARTDMA_HandleTypeDef huartdma1;
 
-
+extern int16_t EncoderPrevValue;
+extern int16_t EncoderValue;
 
 uint32_t TimerTouch = 0; // Timer to debouncing function
 
@@ -306,6 +307,7 @@ void TouchLightsActivity(void)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void TouchClockActivity(void)
 {
+
 	// Check if screen was touched
 		if(XPT2046_IsTouched())
 		{

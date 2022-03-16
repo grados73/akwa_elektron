@@ -31,6 +31,7 @@ extern MenuTFTState State;
 extern uint8_t NrOfLeds;
 extern UARTDMA_HandleTypeDef huartdma2;
 
+
 uint8_t OldHours = 0;
 uint8_t OldMinutes = 0;
 static uint32_t LastTime = 0;
@@ -321,6 +322,8 @@ void showLightsControlPanel()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void showClockSetPanel()
 {
+
+
 	ILI9341_ClearDisplay(ILI9341_LIGHTGREY);
 	EF_SetFont(&arialBlack_20ptFontInfo);
 
@@ -790,7 +793,7 @@ void ChangeHourOnScreen()
 	  if(CMinute != OldMinutes)
 	  {
 		  uint8_t  CDayOfWeek = DS3231_GetDayOfWeek();
-		//  makeScheduleActivity(CHour, CMinute, CDayOfWeek); // Check if changed hour and minute are set in schedules
+		makeScheduleActivity(CHour, CMinute, CDayOfWeek); // Check if changed hour and minute are set in schedules
 
 		  if(State == MENUTFT_PARAMETERS)
 		  {
@@ -1071,7 +1074,7 @@ void makeScheduleActivity(uint8_t CurrentHour, uint8_t CurrentMinute, uint8_t Cu
 				EEPROM_ScheduleHourOnRead(i, &HourOnFromEEPROM); // Get set Hour ON from EEPROM
 				if(CurrentHour == HourOnFromEEPROM)
 				{
-					makeRelayOn(i);
+					//makeRelayOn(i);
 				}
 			}
 
@@ -1084,7 +1087,7 @@ void makeScheduleActivity(uint8_t CurrentHour, uint8_t CurrentMinute, uint8_t Cu
 				EEPROM_ScheduleHourOffRead(i, &HourOfFromEEPROM);
 				if(CurrentHour == HourOfFromEEPROM)
 				{
-					makeRelayOff(i);
+				//	makeRelayOff(i);
 				}
 			}
 		}
