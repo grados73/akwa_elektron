@@ -29,6 +29,7 @@ extern uint8_t LightsButtonState[4];
 extern uint8_t ActivityButtonState[2];
 extern MenuTFTState State;
 extern uint8_t NrOfLeds;
+extern UARTDMA_HandleTypeDef huartdma1;
 extern UARTDMA_HandleTypeDef huartdma2;
 
 
@@ -37,6 +38,9 @@ uint8_t OldMinutes = 0;
 static uint32_t LastTime = 0;
 
 uint8_t NumberOfSchedules = NUMBER_OF_AVAILABLE_SCHEDULES;
+
+void makeRelayOn2(uint8_t NumberOfShedule);
+void makeRelayOff2(uint8_t NumberOfShedule);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1074,7 +1078,7 @@ void makeScheduleActivity(uint8_t CurrentHour, uint8_t CurrentMinute, uint8_t Cu
 				EEPROM_ScheduleHourOnRead(i, &HourOnFromEEPROM); // Get set Hour ON from EEPROM
 				if(CurrentHour == HourOnFromEEPROM)
 				{
-					//makeRelayOn(i);
+					makeRelayOn2(i);
 				}
 			}
 
@@ -1087,44 +1091,162 @@ void makeScheduleActivity(uint8_t CurrentHour, uint8_t CurrentMinute, uint8_t Cu
 				EEPROM_ScheduleHourOffRead(i, &HourOfFromEEPROM);
 				if(CurrentHour == HourOfFromEEPROM)
 				{
-				//	makeRelayOff(i);
+					makeRelayOff2(i);
 				}
 			}
 		}
 	}
 }
 
-void makeRelayOn(uint8_t NumberOfShedule)
+void makeRelayOn2(uint8_t NumberOfShedule)
 {
 		uint8_t ScheduleRelayAppliesTab[9] = {0};  // { R1, R2, R3, R4, WS, L1, L2, L3, L4}
 		EEPROM_ScheduleRelayAndSwitchTabRead(NumberOfShedule, ScheduleRelayAppliesTab);
+		if(ScheduleRelayAppliesTab[0] == 1)
+		{
+			SendComand(UCMD_RELAY_1_ON); // Send comannd to ON
+			UARTDMA_Print(&huartdma1, "RELAYON=1\n"); // Print message to ESP
+			SwitchesButtonState[0] = 1;
+			//EEPROM_RelayStateUpdate(1, 1);
+		}
 
-			if(ScheduleRelayAppliesTab[0] == 1) firstSwitchTurn(1);
-			if(ScheduleRelayAppliesTab[1] == 1) secondSwitchTurn(1);
-			if(ScheduleRelayAppliesTab[2] == 1) thirdSwitchTurn(1);
-			if(ScheduleRelayAppliesTab[3] == 1) fourthSwitchTurn(1);
-			//if(ScheduleRelayAppliesTab[4] == 1) ; // TODO! WS OFF
-			if(ScheduleRelayAppliesTab[5] == 1) firstLightTurn(1);
-			if(ScheduleRelayAppliesTab[6] == 1) secondLightTurn(1);
-			if(ScheduleRelayAppliesTab[7] == 1) thirdLightTurn(1);
-			if(ScheduleRelayAppliesTab[8] == 1) fourthLightTurn(1);
+		if(ScheduleRelayAppliesTab[1] == 1)
+		{
+			SendComand(UCMD_RELAY_2_ON); // Send comannd to ON
+			UARTDMA_Print(&huartdma1, "RELAYON=2\n"); // Print message to ESP
+			SwitchesButtonState[1] = 1;
+			//EEPROM_RelayStateUpdate(2, 1);
+		}
+
+		if(ScheduleRelayAppliesTab[2] == 1)
+		{
+			SendComand(UCMD_RELAY_3_ON); // Send comannd to ON
+			UARTDMA_Print(&huartdma1, "RELAYON=3\n"); // Print message to ESP
+			SwitchesButtonState[2] = 1;
+			//EEPROM_RelayStateUpdate(3, 1);
+		}
+
+		if(ScheduleRelayAppliesTab[3] == 1)
+		{
+			SendComand(UCMD_RELAY_4_ON); // Send comannd to ON
+			UARTDMA_Print(&huartdma1, "RELAYON=4\n"); // Print message to ESP
+			SwitchesButtonState[3] = 1;
+			//EEPROM_RelayStateUpdate(4, 1);
+		}
+
+		if(ScheduleRelayAppliesTab[4] == 1)
+		{
+			//TODO! WS ON
+		}
+
+		if(ScheduleRelayAppliesTab[5] == 1)
+		{
+			SendComand(UCMD_LIGHT_1_ON); // Send comannd to ON
+			UARTDMA_Print(&huartdma1, "RELAYON=5\n"); // Print message to ESP
+			LightsButtonState[0] = 1;
+			//EEPROM_LightStateUpdate(1, 1);
+		}
+
+		if(ScheduleRelayAppliesTab[6] == 1)
+		{
+			SendComand(UCMD_LIGHT_2_ON); // Send comannd to ON
+			UARTDMA_Print(&huartdma1, "RELAYON=6\n"); // Print message to ESP
+			LightsButtonState[1] = 1;
+			//EEPROM_LightStateUpdate(2, 1);
+		}
+
+		if(ScheduleRelayAppliesTab[7] == 1)
+		{
+			SendComand(UCMD_LIGHT_3_ON); // Send comannd to ON
+			UARTDMA_Print(&huartdma1, "RELAYON=7\n"); // Print message to ESP
+			LightsButtonState[2] = 1;
+			//EEPROM_LightStateUpdate(3, 1);
+		}
+
+		if(ScheduleRelayAppliesTab[8] == 1)
+		{
+			SendComand(UCMD_LIGHT_4_ON); // Send comannd to ON
+			UARTDMA_Print(&huartdma1, "RELAYON=8\n"); // Print message to ESP
+			LightsButtonState[3] = 1;
+			//EEPROM_LightStateUpdate(4, 1);
+		}
+
 }
-
-void makeRelayOff(uint8_t NumberOfShedule)
+void makeRelayOff2(uint8_t NumberOfShedule)
 {
 		uint8_t ScheduleRelayAppliesTab[9] = {0};  // { R1, R2, R3, R4, WS, L1, L2, L3, L4}
 		EEPROM_ScheduleRelayAndSwitchTabRead(NumberOfShedule, ScheduleRelayAppliesTab);
-			if(ScheduleRelayAppliesTab[0] == 1) firstSwitchTurn(0);
-			if(ScheduleRelayAppliesTab[1] == 1) secondSwitchTurn(0);
-			if(ScheduleRelayAppliesTab[2] == 1) thirdSwitchTurn(0);
-			if(ScheduleRelayAppliesTab[3] == 1) fourthSwitchTurn(0);
-			//if(ScheduleRelayAppliesTab[4] == 1) ; // TODO! WS ON
-			if(ScheduleRelayAppliesTab[5] == 1) firstLightTurn(0);
-			if(ScheduleRelayAppliesTab[6] == 1) secondLightTurn(0);
-			if(ScheduleRelayAppliesTab[7] == 1) thirdLightTurn(0);
-			if(ScheduleRelayAppliesTab[8] == 1) fourthLightTurn(0);
+		if(ScheduleRelayAppliesTab[0] == 1)
+		{
+			SendComand(UCMD_RELAY_1_OFF); // Send comannd to OFF
+			UARTDMA_Print(&huartdma1, "RELAYOFF=1\n"); // Print message to ESP
+			SwitchesButtonState[0] = 0;
+			//EEPROM_RelayStateUpdate(1, 0);
+		}
 
+		if(ScheduleRelayAppliesTab[1] == 1)
+		{
+			SendComand(UCMD_RELAY_2_OFF); // Send comannd to OFF
+			UARTDMA_Print(&huartdma1, "RELAYOFF=2\n"); // Print message to ESP
+			SwitchesButtonState[1] = 0;
+			//EEPROM_RelayStateUpdate(2, 0);
+		}
+
+		if(ScheduleRelayAppliesTab[2] == 1)
+		{
+			SendComand(UCMD_RELAY_3_OFF); // Send comannd to OFF
+			UARTDMA_Print(&huartdma1, "RELAYOFF=3\n"); // Print message to ESP
+			SwitchesButtonState[2] = 0;
+			//EEPROM_RelayStateUpdate(3, 0);
+		}
+
+		if(ScheduleRelayAppliesTab[3] == 1)
+		{
+			SendComand(UCMD_RELAY_4_OFF); // Send comannd to OFF
+			UARTDMA_Print(&huartdma1, "RELAYOFF=4\n"); // Print message to ESP
+			SwitchesButtonState[3] = 0;
+			//EEPROM_RelayStateUpdate(4, 0);
+		}
+
+		if(ScheduleRelayAppliesTab[4] == 1)
+		{
+			//TODO! WS OFF
+		}
+
+		if(ScheduleRelayAppliesTab[5] == 1)
+		{
+			SendComand(UCMD_LIGHT_1_OFF); // Send comannd to OFF
+			UARTDMA_Print(&huartdma1, "RELAYOFF=5\n"); // Print message to ESP
+			LightsButtonState[0] = 0;
+			//EEPROM_LightStateUpdate(1, 0);
+		}
+
+		if(ScheduleRelayAppliesTab[6] == 1)
+		{
+			SendComand(UCMD_LIGHT_2_OFF); // Send comannd to OFF
+			UARTDMA_Print(&huartdma1, "RELAYOFF=6\n"); // Print message to ESP
+			LightsButtonState[1] = 0;
+			//EEPROM_LightStateUpdate(2, 0);
+		}
+
+		if(ScheduleRelayAppliesTab[7] == 1)
+		{
+			SendComand(UCMD_LIGHT_3_ON); // Send comannd to OFF
+			UARTDMA_Print(&huartdma1, "RELAYOFF=7\n"); // Print message to ESP
+			LightsButtonState[2] = 0;
+			//EEPROM_LightStateUpdate(3, 0);
+		}
+
+		if(ScheduleRelayAppliesTab[8] == 1)
+		{
+			SendComand(UCMD_LIGHT_4_OFF); // Send comannd to OFF
+			UARTDMA_Print(&huartdma1, "RELAYOFF=8\n"); // Print message to ESP
+			LightsButtonState[3] = 0;
+			//EEPROM_LightStateUpdate(4, 0);
+		}
 }
+
+
 
 //
 // Function to wait but only if it is necessary

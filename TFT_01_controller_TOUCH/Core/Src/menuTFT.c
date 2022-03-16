@@ -1423,6 +1423,19 @@ void clockIncreaseSixHoursTenMinutes(uint16_t x, uint16_t y)
 	EF_SetFont(&arialBlack_20ptFontInfo);
 }
 
+void ClockIncreaseHour()
+{
+
+}
+void ClockIncreaseMinutes()
+{
+
+}
+void ClockIncreaseDay()
+{
+
+}
+
 //
 // Change status of Switch after touch them
 //
