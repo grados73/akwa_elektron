@@ -48,7 +48,8 @@ uint8_t minuteOffSchedule2 = 0;
 
 extern UARTDMA_HandleTypeDef huartdma1;
 
-
+extern int16_t EncoderPrevValue;
+extern int16_t EncoderValue;
 
 uint32_t TimerTouch = 0; // Timer to debouncing function
 
@@ -306,6 +307,7 @@ void TouchLightsActivity(void)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void TouchClockActivity(void)
 {
+
 	// Check if screen was touched
 		if(XPT2046_IsTouched())
 		{
@@ -1419,6 +1421,19 @@ void clockIncreaseSixHoursTenMinutes(uint16_t x, uint16_t y)
 
 	}
 	EF_SetFont(&arialBlack_20ptFontInfo);
+}
+
+void ClockIncreaseHour()
+{
+
+}
+void ClockIncreaseMinutes()
+{
+
+}
+void ClockIncreaseDay()
+{
+
 }
 
 //

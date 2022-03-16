@@ -139,8 +139,6 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
   //
-  //Timer START
-  HAL_TIM_Base_Start_IT(&htim11);
   // TFT controller INIT
   ILI9341_Init(&hspi1);
   // UART in DMA mode with use RingBuffer INIT
@@ -151,11 +149,18 @@ int main(void)
   // RTC Initialization - I2C1
   DS3231_Init(&hi2c1);
   DS3231_SetInterruptMode(DS3231_ALARM_INTERRUPT);
+  DS3231_SetRateSelect(DS3231_1HZ);
   DS3231_EnableOscillator(DS3231_ENABLED);
   // EEPROM CHECK TODO! Add check of eeprom and informing on screen about results
   uint8_t result = 0;
   eeprom_read(0x01, &result, sizeof(result));
 
+  //Timer START
+  HAL_TIM_Base_Start_IT(&htim11);
+
+  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
+  int16_t EncoderPrevValue = 0;
+  int16_t EncoderValue = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -199,6 +204,8 @@ int main(void)
 	  //
 	  MenuTFT();
 	  ////////////////////////////////////////////////////////
+
+	  EncoderValue = __HAL_TIM_GET_COUNTER(&htim2);
 
     /* USER CODE END WHILE */
 
@@ -280,6 +287,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 	if(htim->Instance == TIM10) // Update even each second - one per second 1/s
 	{
+		//TODO! Make possibility to change FEEDING_TIME_IN_S
 		if(FeedingCounter >= FEEDING_TIME_IN_S) // timer to count seconds from start feeding to turn off this activity
 		{
 			HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
@@ -303,7 +311,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	if(GPIO_Pin == IRQ_DS3231_RTC_Pin) // Interrupt from RTC - alarm one per minute
 	{
 		DS3231_ClearAlarm2Flag();
-
 	}
 }
 
