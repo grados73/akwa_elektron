@@ -61,6 +61,14 @@ MenuTFTState State = MENUTFT_INIT; // Initialization state for MenuTFT State Mac
 
 EncoderRotateState EncoderState = ENCODER_IDLE; // Initialization state for Encoder
 
+void OneMinuteIncrease(void);
+void OneHourIncrease(void);
+void OneDayIncrease(void);
+
+void OneMinuteDecrease(void);
+void OneHourDecrease(void);
+void OneHourDecrease(void);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -1359,47 +1367,20 @@ void clockIncreaseOneHourAndMinute(uint16_t x, uint16_t y)
 	{
 		EncoderState = ENCODER_CLOCK_HOUR;
 
-		if(Hours < 24)
-		{
-			Hours++;
-		}
-		else
-		{
-			Hours = 1;
-		}
-		sprintf((char*)Msg, " %d  ", Hours);
-		EF_PutString(Msg, STRING_H_M_NUMBER_POZ_X, STRING_HOUR_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		OneHourIncrease();
 
 	}
 	else if((y >= CLOCK_B_2_POZ_Y)&&(y <= (CLOCK_B_2_POZ_Y + CLOCK_BUTTON_H))) // Add 1 Minute
 	{
 		EncoderState = ENCODER_CLOCK_MINUTE;
 
-		if(Minutes < 59)
-		{
-			Minutes++;
-		}
-		else
-		{
-			Minutes = 0;
-		}
-		sprintf((char*)Msg, " %d  ", Minutes);
-		EF_PutString(Msg, STRING_H_M_NUMBER_POZ_X, STRING_MINUTE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		OneMinuteIncrease();
 	}
 	else if((y >= CLOCK_B_3_POZ_Y)&&(y <= (CLOCK_B_3_POZ_Y + CLOCK_BUTTON_H))) // Add 1 Day
 	{
 		EncoderState = ENCODER_CLOCK_DAY;
 
-		if(DayOfWeek < 7)
-		{
-			DayOfWeek++;
-		}
-		else
-		{
-			DayOfWeek = 1;
-		}
-		sprintf((char*)Msg, "DZIEŃ TYG:  %d ", DayOfWeek);
-		EF_PutString(Msg, STRING_HOUR_MINUTE_POZ_X, STRING_DAY_OF_WEEK_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		OneDayIncrease();
 	}
 }
 
@@ -1439,6 +1420,8 @@ void clockIncreaseSixHoursTenMinutes(uint16_t x, uint16_t y)
 	}
 	EF_SetFont(&arialBlack_20ptFontInfo);
 }
+
+
 
 
 //
@@ -1993,6 +1976,63 @@ void fourthLightTurn(uint8_t NewState)
 	}
 }
 
+void OneMinuteIncrease(void)
+{
+	if(Minutes < 59)
+	{
+		Minutes++;
+	}
+	else
+	{
+		Minutes = 0;
+	}
+	sprintf((char*)Msg, " %d  ", Minutes);
+	EF_PutString(Msg, STRING_H_M_NUMBER_POZ_X, STRING_MINUTE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void OneHourIncrease(void)
+{
+	if(Hours < 24)
+	{
+		Hours++;
+	}
+	else
+	{
+		Hours = 1;
+	}
+	sprintf((char*)Msg, " %d  ", Hours);
+	EF_PutString(Msg, STRING_H_M_NUMBER_POZ_X, STRING_HOUR_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void OneDayIncrease(void)
+{
+	if(DayOfWeek < 7)
+	{
+		DayOfWeek++;
+	}
+	else
+	{
+		DayOfWeek = 1;
+	}
+	sprintf((char*)Msg, "DZIEŃ TYG:  %d ", DayOfWeek);
+	EF_PutString(Msg, STRING_HOUR_MINUTE_POZ_X, STRING_DAY_OF_WEEK_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void OneMinuteDecrease(void)
+{
+
+}
+
+void OneHourDecrease(void)
+{
+
+}
+
+void OneDayDecrease(void)
+{
+
+}
+
 void encoderUpgrade(int16_t *EncoderCntWsk)
 {
 	EncoderCounter = *EncoderCntWsk;
@@ -2007,15 +2047,15 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 				{
 					if(EncoderState == ENCODER_CLOCK_MINUTE)
 					{
-						clockIncreaseOneHourAndMinute(1, (CLOCK_B_2_POZ_Y + (CLOCK_BUTTON_H/2)));
+						OneMinuteIncrease();
 					}
 					else if(EncoderState == ENCODER_CLOCK_HOUR)
 					{
-						clockIncreaseOneHourAndMinute(1, (CLOCK_B_1_POZ_Y + (CLOCK_BUTTON_H/2)));
+						OneHourIncrease();
 					}
 					else if (EncoderState == ENCODER_CLOCK_DAY)
 					{
-						clockIncreaseOneHourAndMinute(1, (CLOCK_B_3_POZ_Y + (CLOCK_BUTTON_H/2)));
+						OneDayIncrease();
 					}
 
 				}
