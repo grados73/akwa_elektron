@@ -182,6 +182,16 @@ typedef enum
 	MENUTFT_SCHEDULE_2		// Show panel to set shedule 2
 } MenuTFTState;
 
+typedef enum
+{
+	ENCODER_IDLE, 			// Build GUI
+	ENCODER_CLOCK_HOUR,		// Clock screen
+	ENCODER_CLOCK_MINUTE,
+	ENCODER_CLOCK_DAY,
+
+
+} EncoderRotateState;
+
 //
 // Declaration of function to handling touch in each screen
 void MenuTFT(void);

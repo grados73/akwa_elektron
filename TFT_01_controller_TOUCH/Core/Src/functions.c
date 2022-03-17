@@ -39,9 +39,6 @@ static uint32_t LastTime = 0;
 
 uint8_t NumberOfSchedules = NUMBER_OF_AVAILABLE_SCHEDULES;
 
-int16_t EncoderCounter = 0;
-int16_t EncoderCounterPrevious = 0;
-int16_t RotateUpgradeNumber = 0;
 
 void makeRelayOn2(uint8_t NumberOfShedule);
 void makeRelayOff2(uint8_t NumberOfShedule);
@@ -1258,22 +1255,10 @@ void initWait(uint32_t TimeInMs)
 {
     while (HAL_GetTick() - LastTime <= TimeInMs)
     {
+
     }
 }
 
 
-void encoderUpgrade(int16_t *EncoderCntWsk)
-{
-	EncoderCounter = *EncoderCntWsk;
 
-	if (EncoderCounter != EncoderCounterPrevious)
-	{
-
-
-		RotateUpgradeNumber = (EncoderCounter - EncoderCounterPrevious)/2;
-		RotateUpgradeNumber=RotateUpgradeNumber;
-
-		EncoderCounterPrevious = EncoderCounter;
-	}
-}
 

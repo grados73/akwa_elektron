@@ -46,6 +46,10 @@ uint8_t hourOffSchedule2 = 0;
 uint8_t minuteOnSchedule2 = 0;
 uint8_t minuteOffSchedule2 = 0;
 
+int16_t EncoderCounter = 0;
+int16_t EncoderCounterPrevious = 0;
+int16_t RotateUpgradeNumber = 0;
+
 extern UARTDMA_HandleTypeDef huartdma1;
 
 extern int16_t EncoderPrevValue;
@@ -54,6 +58,8 @@ extern int16_t EncoderValue;
 uint32_t TimerTouch = 0; // Timer to debouncing function
 
 MenuTFTState State = MENUTFT_INIT; // Initialization state for MenuTFT State Machine
+
+EncoderRotateState EncoderState = ENCODER_IDLE; // Initialization state for Encoder
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -334,6 +340,7 @@ void TouchClockActivity(void)
 						(y >= LEFT_BUTTON_Y)&&(y <= (LEFT_BUTTON_Y + LEFT_BUTTON_H)))
 				{
 					State = MENUTFT_PARAMETERS;
+					EncoderState = ENCODER_IDLE;
 					StateChangeFlag = 1;
 				}
 
@@ -354,6 +361,7 @@ void TouchClockActivity(void)
 						(y >= MEDIUM_BUTTON_CLOCK_Y)&&(y <= (MEDIUM_BUTTON_CLOCK_Y + MEDIUM_BUTTON_H_CLOCK)))
 				{
 					State = MENUTFT_SCHEDULE_1;
+					EncoderState = ENCODER_IDLE;
 					StateChangeFlag = 1;
 				}
 
@@ -1349,6 +1357,8 @@ void clockIncreaseOneHourAndMinute(uint16_t x, uint16_t y)
 {
 	if((y >= CLOCK_B_1_POZ_Y)&&(y <= (CLOCK_B_1_POZ_Y + CLOCK_BUTTON_H))) // Add 1 Hour
 	{
+		EncoderState = ENCODER_CLOCK_HOUR;
+
 		if(Hours < 24)
 		{
 			Hours++;
@@ -1363,6 +1373,8 @@ void clockIncreaseOneHourAndMinute(uint16_t x, uint16_t y)
 	}
 	else if((y >= CLOCK_B_2_POZ_Y)&&(y <= (CLOCK_B_2_POZ_Y + CLOCK_BUTTON_H))) // Add 1 Minute
 	{
+		EncoderState = ENCODER_CLOCK_MINUTE;
+
 		if(Minutes < 59)
 		{
 			Minutes++;
@@ -1376,6 +1388,8 @@ void clockIncreaseOneHourAndMinute(uint16_t x, uint16_t y)
 	}
 	else if((y >= CLOCK_B_3_POZ_Y)&&(y <= (CLOCK_B_3_POZ_Y + CLOCK_BUTTON_H))) // Add 1 Day
 	{
+		EncoderState = ENCODER_CLOCK_DAY;
+
 		if(DayOfWeek < 7)
 		{
 			DayOfWeek++;
@@ -1393,6 +1407,7 @@ void clockIncreaseSixHoursTenMinutes(uint16_t x, uint16_t y)
 {
 	if((y >= CLOCK_B_1_POZ_Y)&&(y <= (CLOCK_B_1_POZ_Y + CLOCK_BUTTON_H))) // Add 6 Hour
 	{
+		EncoderState = ENCODER_CLOCK_HOUR;
 
 		if(Hours < 19)
 		{
@@ -1408,6 +1423,8 @@ void clockIncreaseSixHoursTenMinutes(uint16_t x, uint16_t y)
 	}
 	else if((y >= CLOCK_B_2_POZ_Y)&&(y <= (CLOCK_B_2_POZ_Y + CLOCK_BUTTON_H))) // Add 10 Minute
 	{
+		EncoderState = ENCODER_CLOCK_MINUTE;
+
 		if(Minutes < 49)
 		{
 			Minutes = Minutes +10;
@@ -1423,18 +1440,6 @@ void clockIncreaseSixHoursTenMinutes(uint16_t x, uint16_t y)
 	EF_SetFont(&arialBlack_20ptFontInfo);
 }
 
-void ClockIncreaseHour()
-{
-
-}
-void ClockIncreaseMinutes()
-{
-
-}
-void ClockIncreaseDay()
-{
-
-}
 
 //
 // Change status of Switch after touch them
@@ -1985,5 +1990,48 @@ void fourthLightTurn(uint8_t NewState)
 		}
 		LightsButtonState[3] = 1;
 		EEPROM_LightStateUpdate(4, 1);
+	}
+}
+
+void encoderUpgrade(int16_t *EncoderCntWsk)
+{
+	EncoderCounter = *EncoderCntWsk;
+	if(EncoderCounter != EncoderCounterPrevious) // if was rotated
+	{
+		if (EncoderCounter > EncoderCounterPrevious) // if increase
+		{
+			if((EncoderCounter - EncoderCounterPrevious >= 2)) // if full rotate was done
+			{
+				RotateUpgradeNumber = (EncoderCounter - EncoderCounterPrevious)/2;
+				for(uint8_t i = 1 ; i <= RotateUpgradeNumber ; i++)
+				{
+					if(EncoderState == ENCODER_CLOCK_MINUTE)
+					{
+						clockIncreaseOneHourAndMinute(1, (CLOCK_B_2_POZ_Y + (CLOCK_BUTTON_H/2)));
+					}
+					else if(EncoderState == ENCODER_CLOCK_HOUR)
+					{
+						clockIncreaseOneHourAndMinute(1, (CLOCK_B_1_POZ_Y + (CLOCK_BUTTON_H/2)));
+					}
+					else if (EncoderState == ENCODER_CLOCK_DAY)
+					{
+						clockIncreaseOneHourAndMinute(1, (CLOCK_B_3_POZ_Y + (CLOCK_BUTTON_H/2)));
+					}
+
+				}
+				RotateUpgradeNumber = 0;
+				EncoderCounterPrevious = EncoderCounter;
+			}
+		}
+		else // if decrease
+		{
+			if(EncoderCounterPrevious - EncoderCounter >= 2) // if full rotate was done
+			{
+				RotateUpgradeNumber = (EncoderCounterPrevious - EncoderCounter)/2;
+
+
+				EncoderCounterPrevious = EncoderCounter;
+			}
+		}
 	}
 }
