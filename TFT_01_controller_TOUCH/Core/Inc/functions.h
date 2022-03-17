@@ -140,8 +140,8 @@ void restoreTFTScheduleRelayLights(uint8_t NrOfSchedule);
 
 // temporary in .h
 void makeScheduleActivity(uint8_t CurrentHour, uint8_t CurrentMinute, uint8_t CurrentDayOfWeek);
-void makeRelayOn(uint8_t NumberOfShedule);
-void makeRelayOff(uint8_t NumberOfShedule);
+
+void encoderUpgrade(int16_t *EncoderCntWsk);
 
 
 #endif /* INC_FUNCTIONS_H_ */

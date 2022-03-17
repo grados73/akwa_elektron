@@ -159,7 +159,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim11);
 
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
-  int16_t EncoderPrevValue = 0;
+
   int16_t EncoderValue = 0;
   /* USER CODE END 2 */
 
@@ -206,6 +206,7 @@ int main(void)
 	  ////////////////////////////////////////////////////////
 
 	  EncoderValue = __HAL_TIM_GET_COUNTER(&htim2);
+	  encoderUpgrade(&EncoderValue);
 
     /* USER CODE END WHILE */
 
