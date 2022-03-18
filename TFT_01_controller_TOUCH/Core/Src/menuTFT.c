@@ -2020,16 +2020,46 @@ void OneDayIncrease(void)
 
 void OneMinuteDecrease(void)
 {
+	if(Minutes > 0)
+	{
+		Minutes--;
+	}
+	else
+	{
+		Minutes = 59;
+	}
+	sprintf((char*)Msg, " %d  ", Minutes);
+	EF_PutString(Msg, STRING_H_M_NUMBER_POZ_X, STRING_MINUTE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 
 }
 
 void OneHourDecrease(void)
 {
+	if(Hours > 0)
+	{
+		Hours--;
+	}
+	else
+	{
+		Hours = 24;
+	}
+	sprintf((char*)Msg, " %d  ", Hours);
+	EF_PutString(Msg, STRING_H_M_NUMBER_POZ_X, STRING_HOUR_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 
 }
 
 void OneDayDecrease(void)
 {
+	if(DayOfWeek > 0)
+	{
+		DayOfWeek--;
+	}
+	else
+	{
+		DayOfWeek = 7;
+	}
+	sprintf((char*)Msg, "DZIEŃ TYG:  %d ", DayOfWeek);
+	EF_PutString(Msg, STRING_HOUR_MINUTE_POZ_X, STRING_DAY_OF_WEEK_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 
 }
 
@@ -2057,7 +2087,6 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 					{
 						OneDayIncrease();
 					}
-
 				}
 				RotateUpgradeNumber = 0;
 				EncoderCounterPrevious = EncoderCounter;
@@ -2068,8 +2097,21 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 			if(EncoderCounterPrevious - EncoderCounter >= 2) // if full rotate was done
 			{
 				RotateUpgradeNumber = (EncoderCounterPrevious - EncoderCounter)/2;
-
-
+				for(uint8_t i = 1 ; i <= RotateUpgradeNumber ; i++)
+				{
+					if(EncoderState == ENCODER_CLOCK_MINUTE)
+					{
+						OneMinuteDecrease();
+					}
+					else if(EncoderState == ENCODER_CLOCK_HOUR)
+					{
+						OneHourDecrease();
+					}
+					else if (EncoderState == ENCODER_CLOCK_DAY)
+					{
+						OneDayDecrease();
+					}
+				}
 				EncoderCounterPrevious = EncoderCounter;
 			}
 		}
