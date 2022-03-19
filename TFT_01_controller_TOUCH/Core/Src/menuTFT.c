@@ -88,6 +88,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showCurrentParameters(CTemp, 0, 0, 0, CPres);
+			EncoderState = ENCODER_IDLE;
 			StateChangeFlag = 0;
 		}
 		TouchParametersActivity();
@@ -96,6 +97,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showControlPanel();
+			EncoderState = ENCODER_IDLE;
 			StateChangeFlag = 0;
 		}
 		TouchSwitchActivity();
@@ -104,6 +106,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showLightsControlPanel();
+			EncoderState = ENCODER_IDLE;
 			StateChangeFlag = 0;
 		}
 		TouchLightsActivity();
@@ -112,6 +115,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showClockSetPanel();
+			EncoderState = ENCODER_IDLE;
 			ClockChangeFlag = 1;
 			StateChangeFlag = 0;
 		}
@@ -121,6 +125,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showPreparedActivitiesPanel();
+			EncoderState = ENCODER_IDLE;
 			StateChangeFlag = 0;
 		}
 		TouchPredefinedActivityActivity();
@@ -129,6 +134,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showWSLedPanel();
+			EncoderState = ENCODER_IDLE;
 			WSLedChangeFlag = 1;
 			StateChangeFlag = 0;
 		}
@@ -138,6 +144,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showSchedule1Panel();
+			EncoderState = ENCODER_IDLE;
 			ScheduleChangeFlag = 1;
 			StateChangeFlag = 0;
 		}
@@ -147,6 +154,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showSchedule2Panel();
+			EncoderState = ENCODER_IDLE;
 			ScheduleChangeFlag = 1;
 			StateChangeFlag = 0;
 		}
@@ -2075,7 +2083,25 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 				RotateUpgradeNumber = (EncoderCounter - EncoderCounterPrevious)/2;
 				for(uint8_t i = 1 ; i <= RotateUpgradeNumber ; i++)
 				{
-					if(EncoderState == ENCODER_CLOCK_MINUTE)
+					if(EncoderState == ENCODER_IDLE)
+					{
+						if(State == MENUTFT_PARAMETERS)
+							{
+							State = MENUTFT_SWITCH;
+							StateChangeFlag = 1;
+							}
+						else if (State == MENUTFT_SWITCH)
+						{
+							State = MENUTFT_LIGHTS;
+							StateChangeFlag = 1;
+						}
+						else if (State == MENUTFT_LIGHTS)
+							{
+							State = MENUTFT_PARAMETERS;
+							StateChangeFlag = 1;
+							}
+					}
+					else if(EncoderState == ENCODER_CLOCK_MINUTE)
 					{
 						OneMinuteIncrease();
 					}
@@ -2099,7 +2125,25 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 				RotateUpgradeNumber = (EncoderCounterPrevious - EncoderCounter)/2;
 				for(uint8_t i = 1 ; i <= RotateUpgradeNumber ; i++)
 				{
-					if(EncoderState == ENCODER_CLOCK_MINUTE)
+					if(EncoderState == ENCODER_IDLE)
+					{
+						if(State == MENUTFT_PARAMETERS)
+							{
+							State = MENUTFT_LIGHTS;
+							StateChangeFlag = 1;
+							}
+						else if (State == MENUTFT_SWITCH)
+							{
+							State = MENUTFT_PARAMETERS;
+							StateChangeFlag = 1;
+							}
+						else if (State == MENUTFT_LIGHTS)
+							{
+							State = MENUTFT_SWITCH;
+							StateChangeFlag = 1;
+							}
+					}
+					else if(EncoderState == ENCODER_CLOCK_MINUTE)
 					{
 						OneMinuteDecrease();
 					}

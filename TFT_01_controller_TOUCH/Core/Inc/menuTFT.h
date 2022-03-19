@@ -187,7 +187,7 @@ typedef enum
 	ENCODER_IDLE, 			// Build GUI
 	ENCODER_CLOCK_HOUR,		// Clock screen
 	ENCODER_CLOCK_MINUTE,
-	ENCODER_CLOCK_DAY,
+	ENCODER_CLOCK_DAY
 
 
 } EncoderRotateState;
