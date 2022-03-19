@@ -185,9 +185,10 @@ typedef enum
 typedef enum
 {
 	ENCODER_IDLE, 			// Build GUI
-	ENCODER_CLOCK_HOUR,		// Clock screen
-	ENCODER_CLOCK_MINUTE,
-	ENCODER_CLOCK_DAY
+	ENCODER_CLOCK_HOUR,		// Clock screen change hour
+	ENCODER_CLOCK_MINUTE,	// Clock screen change minute
+	ENCODER_CLOCK_DAY,		// Clock screen change day
+	ENCODER_WS_LED			// WS2812b screen change number of leds
 
 
 } EncoderRotateState;

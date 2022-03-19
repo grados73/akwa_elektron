@@ -134,7 +134,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showWSLedPanel();
-			EncoderState = ENCODER_IDLE;
+			EncoderState = ENCODER_WS_LED;
 			WSLedChangeFlag = 1;
 			StateChangeFlag = 0;
 		}
@@ -1612,21 +1612,42 @@ void predefinedActivityTouchAction(uint8_t y)
 //
 // Handling Touch to increase number of WS LED
 //
+
+void WSONEincreaseNumberOfLedOnTFT(void)
+{
+	if(NrOfLeds < 98)
+			{
+				NrOfLeds++;
+			}
+			else
+			{
+				NrOfLeds = 1;
+			}
+			if(NrOfLeds < 10)sprintf((char*)Msg, "  %d ", NrOfLeds);
+			else sprintf((char*)Msg, " %d", NrOfLeds);
+			EF_PutString(Msg, STRING_WS_LED_POZ_NUMBER_X, STRING_WS_LED_ILOSC_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void WSONEdecreaseNumberOfLedOnTFT(void)
+{
+	if(NrOfLeds > 0)
+			{
+				NrOfLeds--;
+			}
+			else
+			{
+				NrOfLeds = 99;
+			}
+			if(NrOfLeds < 10)sprintf((char*)Msg, "  %d ", NrOfLeds);
+			else sprintf((char*)Msg, " %d", NrOfLeds);
+			EF_PutString(Msg, STRING_WS_LED_POZ_NUMBER_X, STRING_WS_LED_ILOSC_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
 void increaseNumberOfWSLedOnTFT(uint8_t x, uint8_t y)
 {
 	if((x >= WS_LED_BUTTON_1_X)&&(x <= (WS_LED_BUTTON_1_X + WS_LED_BUTTON_W))) // Add +1 LED
 	{
-		if(NrOfLeds < 98)
-		{
-			NrOfLeds++;
-		}
-		else
-		{
-			NrOfLeds = 1;
-		}
-		if(NrOfLeds < 10)sprintf((char*)Msg, "  %d ", NrOfLeds);
-		else sprintf((char*)Msg, " %d", NrOfLeds);
-		EF_PutString(Msg, STRING_WS_LED_POZ_NUMBER_X, STRING_WS_LED_ILOSC_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		WSONEincreaseNumberOfLedOnTFT();
 	}
 	else if((x >= WS_LED_BUTTON_2_X)&&(x <= (WS_LED_BUTTON_2_X + WS_LED_BUTTON_W))) // Add +10 LED
 	{
@@ -2113,6 +2134,10 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 					{
 						OneDayIncrease();
 					}
+					else if (EncoderState == ENCODER_WS_LED)
+					{
+						WSONEincreaseNumberOfLedOnTFT();
+					}
 				}
 				RotateUpgradeNumber = 0;
 				EncoderCounterPrevious = EncoderCounter;
@@ -2154,6 +2179,10 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 					else if (EncoderState == ENCODER_CLOCK_DAY)
 					{
 						OneDayDecrease();
+					}
+					else if (EncoderState == ENCODER_WS_LED)
+					{
+						WSONEdecreaseNumberOfLedOnTFT();
 					}
 				}
 				EncoderCounterPrevious = EncoderCounter;
