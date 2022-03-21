@@ -375,3 +375,31 @@ void EEPROM_ScheduleMinuteOffUpdate(uint8_t NrOfSchedule, uint8_t minuteOff)
 	else if(2 == NrOfSchedule) eeprom_write(EEPROM_ADR_SHEDULE_2_MINUTE_OFF, &NewMinute, sizeof(NewMinute));
 
 }
+
+//
+// ACTIVITIES DURATION TIME READ
+uint32_t EEPROM_ActivitiesTimeRead(uint8_t NrOfActivities)
+{
+	uint8_t ActivitiesNumber = NrOfActivities;
+	uint32_t ActivitiesDurationX10Seconds = 0;
+	if(1 == ActivitiesNumber) // if feeding
+	{
+		eeprom_read(EEPROM_ADR_ACTIVITIES_IN_10S, &ActivitiesDurationX10Seconds, sizeof(ActivitiesDurationX10Seconds));
+	}
+	return ActivitiesDurationX10Seconds * 10;
+}
+
+
+//
+// ACTIVITIES DURATION TIME UPDATE
+void EEPROM_ActivitiesTimeUpdate(uint8_t NrOfActivities, uint32_t TimeInSeconds)
+{
+	uint8_t ActivitiesNumber = NrOfActivities;
+	uint32_t Time = (TimeInSeconds/10);
+
+	if( 1 == ActivitiesNumber) // if feeding
+	{
+		eeprom_write(EEPROM_ADR_ACTIVITIES_IN_10S, &Time, sizeof(Time));
+	}
+
+}
