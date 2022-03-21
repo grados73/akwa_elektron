@@ -78,6 +78,7 @@ I2C_HandleTypeDef hi2c1;
 //
 // To update current displayed clock - current TFT screen displayed
 extern MenuTFTState State;
+extern uint32_t activitiesDurationTimeInSeconds;
 //
 // To count time duration Activity
 uint8_t FeedingCounter = 0;
@@ -289,7 +290,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if(htim->Instance == TIM10) // Update even each second - one per second 1/s
 	{
 		//TODO! Make possibility to change FEEDING_TIME_IN_S
-		if(FeedingCounter >= FEEDING_TIME_IN_S) // timer to count seconds from start feeding to turn off this activity
+		if(FeedingCounter >= activitiesDurationTimeInSeconds) // timer to count seconds from start feeding to turn off this activity
 		{
 			HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
 			predefinedActivityKarmienie(0);

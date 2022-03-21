@@ -46,6 +46,8 @@ uint8_t hourOffSchedule2 = 0;
 uint8_t minuteOnSchedule2 = 0;
 uint8_t minuteOffSchedule2 = 0;
 
+uint32_t activitiesDurationTimeInSeconds = 0;
+
 int16_t EncoderCounter = 0;
 int16_t EncoderCounterPrevious = 0;
 int16_t RotateUpgradeNumber = 0;
@@ -125,7 +127,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showPreparedActivitiesPanel();
-			EncoderState = ENCODER_IDLE;
+			EncoderState = ENCODER_ACTIVITIES;
 			StateChangeFlag = 0;
 		}
 		TouchPredefinedActivityActivity();
@@ -427,6 +429,16 @@ void TouchPredefinedActivityActivity()
 			{
 				State = MENUTFT_SWITCH;
 				StateChangeFlag = 1;
+			}
+
+			// Check if that point is inside the RIGHT Button - Confirmed changed clock
+			else if((x >= RIGHT_BUTTON_X)&&(x <= (RIGHT_BUTTON_X+RIGHT_BUTTON_W))&&
+					(y >= RIGHT_BUTTON_Y)&&(y <= (RIGHT_BUTTON_Y + RIGHT_BUTTON_H)))
+			{
+				EF_SetFont(&arialBlack_20ptFontInfo);
+				EEPROM_ActivitiesTimeUpdate(1, activitiesDurationTimeInSeconds);
+				sprintf((char*)Msg, "-Time Changed-");
+				EF_PutString(Msg, CLOCK_STRING_POZ_X, CLOCK_STRING_POZ_Y, ILI9341_GREEN, BG_COLOR, ILI9341_LIGHTGREY);
 			}
 
 			//
@@ -2092,6 +2104,37 @@ void OneDayDecrease(void)
 
 }
 
+void TenSecondsActivitiesDurationIncrease(void)
+{
+	if(activitiesDurationTimeInSeconds < 990)
+	{
+		activitiesDurationTimeInSeconds = activitiesDurationTimeInSeconds + 10;
+	}
+	else
+	{
+		activitiesDurationTimeInSeconds = 10;
+	}
+	if(activitiesDurationTimeInSeconds < 100) sprintf((char*)Msg, " %ld s ", activitiesDurationTimeInSeconds);
+	else sprintf((char*)Msg, "%ld s", activitiesDurationTimeInSeconds);
+	EF_PutString(Msg, ACTIVITIES_TIME_DURATION_NUMBER_X, ACTIVITIES_TIME_DURATION_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void TenSecondsActivitiesDurationDecrease(void)
+{
+	if(activitiesDurationTimeInSeconds > 10)
+	{
+		activitiesDurationTimeInSeconds = activitiesDurationTimeInSeconds - 10;
+	}
+	else
+	{
+		activitiesDurationTimeInSeconds = 990;
+	}
+
+	if(activitiesDurationTimeInSeconds < 100) sprintf((char*)Msg, " %ld s ", activitiesDurationTimeInSeconds);
+	else sprintf((char*)Msg, "%ld s", activitiesDurationTimeInSeconds);
+	EF_PutString(Msg, ACTIVITIES_TIME_DURATION_NUMBER_X, ACTIVITIES_TIME_DURATION_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
 void encoderUpgrade(int16_t *EncoderCntWsk)
 {
 	EncoderCounter = *EncoderCntWsk;
@@ -2138,6 +2181,10 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 					{
 						WSONEincreaseNumberOfLedOnTFT();
 					}
+					else if(EncoderState == ENCODER_ACTIVITIES)
+					{
+						TenSecondsActivitiesDurationIncrease();
+					}
 				}
 				RotateUpgradeNumber = 0;
 				EncoderCounterPrevious = EncoderCounter;
@@ -2183,6 +2230,10 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 					else if (EncoderState == ENCODER_WS_LED)
 					{
 						WSONEdecreaseNumberOfLedOnTFT();
+					}
+					else if(EncoderState == ENCODER_ACTIVITIES)
+					{
+						TenSecondsActivitiesDurationDecrease();
 					}
 				}
 				EncoderCounterPrevious = EncoderCounter;

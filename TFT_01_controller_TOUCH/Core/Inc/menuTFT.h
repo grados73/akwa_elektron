@@ -92,6 +92,9 @@
 #define ACTIVITY_BUTTON_R 10
 #define ACTIVITY_BUTTON_1_Y 60
 #define ACTIVITY_BUTTON_2_Y 120
+#define ACTIVITIES_TIME_DURATION_X 10
+#define ACTIVITIES_TIME_DURATION_Y 180
+#define ACTIVITIES_TIME_DURATION_NUMBER_X 231
 
 //define position and size of button to change WS2812b LEDs
 #define WS_LED_BUTTON_W 30
@@ -188,8 +191,8 @@ typedef enum
 	ENCODER_CLOCK_HOUR,		// Clock screen change hour
 	ENCODER_CLOCK_MINUTE,	// Clock screen change minute
 	ENCODER_CLOCK_DAY,		// Clock screen change day
-	ENCODER_WS_LED			// WS2812b screen change number of leds
-
+	ENCODER_WS_LED,			// WS2812b screen change number of leds
+	ENCODER_ACTIVITIES		// Activities screen change duration
 
 } EncoderRotateState;
 
@@ -242,5 +245,7 @@ void firstLightTurn(uint8_t NewState);
 void secondLightTurn(uint8_t NewState);
 void thirdLightTurn(uint8_t NewState);
 void fourthLightTurn(uint8_t NewState);
+
+
 
 #endif /* INC_MENUTFT_H_ */

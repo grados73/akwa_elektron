@@ -31,7 +31,7 @@ uint32_t CDist2water = 0;
 uint8_t Time[3] = {0,0,0};
 uint8_t SwitchesButtonState[4] = {0,0,0,0};
 uint8_t LightsButtonState[4] = {0,0,0,0};
-uint8_t ActivityButtonState[2] = {0,0};
+//uint8_t ActivityButtonState[2] = {0,0};
 extern uint8_t NrOfLeds;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

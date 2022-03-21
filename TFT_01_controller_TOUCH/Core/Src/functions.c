@@ -26,11 +26,12 @@ extern uint32_t CDist2water ;
 extern uint8_t Time[3];
 extern uint8_t SwitchesButtonState[4];
 extern uint8_t LightsButtonState[4];
-extern uint8_t ActivityButtonState[2];
+uint8_t ActivityButtonState[2] = {0,0};
 extern MenuTFTState State;
 extern uint8_t NrOfLeds;
 extern UARTDMA_HandleTypeDef huartdma1;
 extern UARTDMA_HandleTypeDef huartdma2;
+extern uint32_t activitiesDurationTimeInSeconds;
 
 
 uint8_t OldHours = 0;
@@ -416,6 +417,13 @@ void showPreparedActivitiesPanel()
 	EF_PutString(Msg, (LEFT_BUTTON_X + 3), (LEFT_BUTTON_Y + 2), ILI9341_BLACK, BG_TRANSPARENT, ILI9341_GREEN);
 
 	//
+	// Display button to change screen
+	EF_SetFont(&arial_11ptFontInfo);
+	GFX_DrawFillRoundRectangle(RIGHT_BUTTON_X, RIGHT_BUTTON_Y, RIGHT_BUTTON_W, RIGHT_BUTTON_H, RIGHT_LEFT_BUTTON_R,  ILI9341_GREEN);
+	sprintf((char*)Msg, "CONFIRM");
+	EF_PutString(Msg, (RIGHT_BUTTON_X + 10), (RIGHT_BUTTON_Y + 2), ILI9341_BLACK, BG_TRANSPARENT, ILI9341_GREEN);
+
+	//
 	// Draw current state of Activities button
 	//
 	// First Button
@@ -455,6 +463,12 @@ void showPreparedActivitiesPanel()
 		sprintf((char*)Msg, "OFF");
 		EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_2_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 	}
+
+
+	EF_SetFont(&arialBlack_20ptFontInfo);
+	activitiesDurationTimeInSeconds = EEPROM_ActivitiesTimeRead(1);
+	sprintf((char*)Msg, "Czas karmienia: %ld s", activitiesDurationTimeInSeconds);
+	EF_PutString(Msg, ACTIVITIES_TIME_DURATION_X, ACTIVITIES_TIME_DURATION_Y, ILI9341_BLACK, BG_TRANSPARENT, ILI9341_LIGHTGREY);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -852,6 +866,7 @@ void predefinedActivityKarmienie(uint8_t State)
 	if(NowyStan == 0) //If turn Activity OFF - Filters ON
 	{
 		EEPROM_RelayStateRestore();
+		ActivityButtonState[0] = 0;
 
 		EF_SetFont(&arial_11ptFontInfo);
 		GFX_DrawFillRoundRectangle(ACTIVITY_BUTTON_X, ACTIVITY_BUTTON_1_Y, ACTIVITY_BUTTON_W, ACTIVITY_BUTTON_H, ACTIVITY_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
@@ -860,11 +875,20 @@ void predefinedActivityKarmienie(uint8_t State)
 		sprintf((char*)Msg, "OFF");
 		EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_1_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 
+		if(State == MENUTFT_LIGHTS)
+		{
+			SendComand(UCMD_LIGHT_SCHOW_ALL); // ASK for current lights state
+		}
+		else if(State == MENUTFT_SWITCH)
+		{
+			SendComand(UCMD_RELAY_SCHOW_ALL); // ASK for current lights state
+		}
 	}
 	else 	//If turn Activity ON - Filters OFF, Lights - ON
 	{
 		SendComand(UCMD_RELAY_ALL_OFF);
 		HAL_TIM_Base_Start_IT(&htim10); // start Timer to count time of feeding
+		ActivityButtonState[0] = 1;
 	}
 
 }
