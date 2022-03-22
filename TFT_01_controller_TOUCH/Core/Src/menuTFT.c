@@ -935,6 +935,46 @@ void changeTFTScheduleRelayLights(uint8_t NrOfRS, uint8_t NewState)
 }
 
 //
+// Functions to change on screen hour and minute ON/OFF schedule
+void schedule1HourOnIncrease(void)
+{
+
+}
+void schedule1HourOnDecrease(void)
+{
+
+}
+void schedule1MinuteOnIncrease(void)
+{
+
+}
+void schedule1MinuteOnDecrease(void)
+{
+
+}
+
+void schedule1HourOffIncrease(void)
+{
+
+}
+void schedule1HourOffDecrease(void)
+{
+
+}
+void schedule1MinuteOffIncrease(void)
+{
+
+}
+void schedule1MinuteOffDecrease(void)
+{
+
+}
+
+
+//
+
+
+//
 // Handle touch in Hour And Minute ON section
 void MenuTFTSchedule1ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 {

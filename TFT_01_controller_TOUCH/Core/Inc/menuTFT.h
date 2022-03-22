@@ -174,25 +174,33 @@
 // Structure of MenuTFT current state
 typedef enum
 {
-	MENUTFT_INIT, 			// Build GUI
-	MENUTFT_PARAMETERS, 	// Read parameters
-	MENUTFT_SWITCH,			// Show current switch state, and possibility to change them
-	MENUTFT_CLOCK,			// Set current Hour and Minute
-	MENUTFT_ACTIVITIES,		// Show possible Activities connected with pre-prepared actions
-	MENUTFT_LIGHTS, 		// Show current lights state, and possibility to change them
-	MENUTFT_WS_LED,			// Show panel to control WS2812b LEDs
-	MENUTFT_SCHEDULE_1,		// Show panel to set shedule 1
-	MENUTFT_SCHEDULE_2		// Show panel to set shedule 2
+	MENUTFT_INIT, 					// Build GUI
+	MENUTFT_PARAMETERS, 			// Read parameters
+	MENUTFT_SWITCH,					// Show current switch state, and possibility to change them
+	MENUTFT_CLOCK,					// Set current Hour and Minute
+	MENUTFT_ACTIVITIES,				// Show possible Activities connected with pre-prepared actions
+	MENUTFT_LIGHTS, 				// Show current lights state, and possibility to change them
+	MENUTFT_WS_LED,					// Show panel to control WS2812b LEDs
+	MENUTFT_SCHEDULE_1,				// Show panel to set shedule 1
+	MENUTFT_SCHEDULE_2				// Show panel to set shedule 2
 } MenuTFTState;
 
 typedef enum
 {
-	ENCODER_IDLE, 			// Build GUI
-	ENCODER_CLOCK_HOUR,		// Clock screen change hour
-	ENCODER_CLOCK_MINUTE,	// Clock screen change minute
-	ENCODER_CLOCK_DAY,		// Clock screen change day
-	ENCODER_WS_LED,			// WS2812b screen change number of leds
-	ENCODER_ACTIVITIES		// Activities screen change duration
+	ENCODER_IDLE, 					// Build GUI
+	ENCODER_CLOCK_HOUR,				// Clock screen change hour
+	ENCODER_CLOCK_MINUTE,			// Clock screen change minute
+	ENCODER_CLOCK_DAY,				// Clock screen change day
+	ENCODER_WS_LED,					// WS2812b screen change number of leds
+	ENCODER_ACTIVITIES,				// Activities screen change duration
+	ENCODER_SCHEDULE_1_HOUR_ON,		// Schedule 1 screen add hour on
+	ENCODER_SCHEDULE_1_HOUR_OFF,	// Schedule 1 screen add hour off
+	ENCODER_SCHEDULE_1_MINUTE_ON,	// Schedule 1 screen add minute on
+	ENCODER_SCHEDULE_1_MINUTE_OFF,	// Schedule 1 screen add minute off
+	ENCODER_SCHEDULE_2_HOUR_ON,		// Schedule 2 screen add hour on
+	ENCODER_SCHEDULE_2_HOUR_OFF,	// Schedule 2 screen add hour off
+	ENCODER_SCHEDULE_2_MINUTE_ON,	// Schedule 2 screen add minute on
+	ENCODER_SCHEDULE_2_MINUTE_OFF	// Schedule 2 screen add minute off
 
 } EncoderRotateState;
 
