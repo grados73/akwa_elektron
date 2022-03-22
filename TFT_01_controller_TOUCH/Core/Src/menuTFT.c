@@ -938,36 +938,116 @@ void changeTFTScheduleRelayLights(uint8_t NrOfRS, uint8_t NewState)
 // Functions to change on screen hour and minute ON/OFF schedule
 void schedule1HourOnIncrease(void)
 {
-
+	if(hourOnSchedule1 < 24)
+	{
+		hourOnSchedule1++;
+	}
+	else
+	{
+		hourOnSchedule1 = 1;
+	}
+	if(hourOnSchedule1 >= 10) sprintf((char*)Msg, " %d ", hourOnSchedule1);
+	else sprintf((char*)Msg, " 0%d ", hourOnSchedule1);
+	EF_PutString(Msg, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 }
 void schedule1HourOnDecrease(void)
 {
-
+	if(hourOnSchedule1 > 1)
+	{
+		hourOnSchedule1--;
+	}
+	else
+	{
+		hourOnSchedule1 = 24;
+	}
+	if(hourOnSchedule1 >= 10) sprintf((char*)Msg, " %d ", hourOnSchedule1);
+	else sprintf((char*)Msg, " 0%d ", hourOnSchedule1);
+	EF_PutString(Msg, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 }
 void schedule1MinuteOnIncrease(void)
 {
-
+	if(minuteOnSchedule1 < 59)
+	{
+		minuteOnSchedule1++;
+	}
+	else
+	{
+		minuteOnSchedule1 = 0;
+	}
+	if(minuteOnSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule1);
+	else sprintf((char*)Msg, " 0%d ", minuteOnSchedule1);
+	EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 }
 void schedule1MinuteOnDecrease(void)
 {
-
+	if(minuteOnSchedule1 > 0)
+	{
+		minuteOnSchedule1--;
+	}
+	else
+	{
+		minuteOnSchedule1 = 59;
+	}
+	if(minuteOnSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule1);
+	else sprintf((char*)Msg, " 0%d ", minuteOnSchedule1);
+	EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 }
 
 void schedule1HourOffIncrease(void)
 {
-
+	if(hourOffSchedule1 < 24)
+	{
+		hourOffSchedule1++;
+	}
+	else
+	{
+		hourOffSchedule1 = 1;
+	}
+	if(hourOffSchedule1 >= 10) sprintf((char*)Msg, " %d ", hourOffSchedule1);
+	else sprintf((char*)Msg, " 0%d ", hourOffSchedule1);
+	EF_PutString(Msg, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 }
 void schedule1HourOffDecrease(void)
 {
-
+	if(hourOffSchedule1 > 1)
+	{
+		hourOffSchedule1--;
+	}
+	else
+	{
+		hourOffSchedule1 = 24;
+	}
+	if(hourOffSchedule1 >= 10) sprintf((char*)Msg, " %d ", hourOffSchedule1);
+	else sprintf((char*)Msg, " 0%d ", hourOffSchedule1);
+	EF_PutString(Msg, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 }
 void schedule1MinuteOffIncrease(void)
 {
-
+	if(minuteOffSchedule1 < 59)
+	{
+		minuteOffSchedule1++;
+	}
+	else
+	{
+		minuteOffSchedule1 = 0;
+	}
+	if(minuteOffSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule1);
+	else sprintf((char*)Msg, " 0%d ", minuteOffSchedule1);
+	EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 }
 void schedule1MinuteOffDecrease(void)
 {
-
+	if(minuteOffSchedule1 > 0)
+	{
+		minuteOffSchedule1--;
+	}
+	else
+	{
+		minuteOffSchedule1 = 59;
+	}
+	if(minuteOffSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule1);
+	else sprintf((char*)Msg, " 0%d ", minuteOffSchedule1);
+	EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 }
 
 
@@ -982,34 +1062,16 @@ void MenuTFTSchedule1ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +1H
 	if((x >= ONE_HOUR_ADD_SHEDULE_X)&&(x <= (ONE_HOUR_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(hourOnSchedule1 < 24)
-		{
-			hourOnSchedule1++;
-		}
-		else
-		{
-			hourOnSchedule1 = 1;
-		}
-		if(hourOnSchedule1 >= 10) sprintf((char*)Msg, " %d ", hourOnSchedule1);
-		else sprintf((char*)Msg, " 0%d ", hourOnSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		EncoderState = ENCODER_SCHEDULE_1_HOUR_ON;
+		schedule1HourOnIncrease();
 
 	}
 
-	// Check if it is Hour to add +1M
+	// Check if it is Minute to add +1M
 	else if((x >= ONE_MINUTE_ADD_SHEDULE_X)&&(x <= (ONE_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(minuteOnSchedule1 < 59)
-		{
-			minuteOnSchedule1++;
-		}
-		else
-		{
-			minuteOnSchedule1 = 0;
-		}
-		if(minuteOnSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule1);
-		else sprintf((char*)Msg, " 0%d ", minuteOnSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		schedule1MinuteOnIncrease();
+		EncoderState = ENCODER_SCHEDULE_1_MINUTE_ON;
 	}
 
 	// Check if it is Hour to add +10M
@@ -1037,34 +1099,17 @@ void MenuTFTSchedule1ActivityHourMinuteOFFAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +1H
 	if((x >= ONE_HOUR_ADD_SHEDULE_X)&&(x <= (ONE_HOUR_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(hourOffSchedule1 < 24)
-		{
-			hourOffSchedule1++;
-		}
-		else
-		{
-			hourOffSchedule1 = 1;
-		}
-		if(hourOffSchedule1 >= 10) sprintf((char*)Msg, " %d ", hourOffSchedule1);
-		else sprintf((char*)Msg, " 0%d ", hourOffSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		schedule1HourOffIncrease();
+		EncoderState = ENCODER_SCHEDULE_1_HOUR_OFF;
 
 	}
 
-	// Check if it is Hour to add +1M
+	// Check if it is Minute to add +1M
 	else if((x >= ONE_MINUTE_ADD_SHEDULE_X)&&(x <= (ONE_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(minuteOffSchedule1 < 59)
-		{
-			minuteOffSchedule1++;
-		}
-		else
-		{
-			minuteOffSchedule1 = 0;
-		}
-		if(minuteOffSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule1);
-		else sprintf((char*)Msg, " 0%d ", minuteOffSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		EncoderState = ENCODER_SCHEDULE_1_MINUTE_OFF;
+		schedule1MinuteOffIncrease();
+
 	}
 
 	// Check if it is Hour to add +10M
