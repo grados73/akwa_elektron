@@ -935,7 +935,7 @@ void changeTFTScheduleRelayLights(uint8_t NrOfRS, uint8_t NewState)
 }
 
 //
-// Functions to change on screen hour and minute ON/OFF schedule
+// Functions to change on screen hour and minute ON/OFF  1 schedule
 void schedule1HourOnIncrease(void)
 {
 	if(hourOnSchedule1 < 24)
@@ -1077,6 +1077,7 @@ void MenuTFTSchedule1ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +10M
 	else if((x >= TEN_MINUTE_ADD_SHEDULE_X)&&(x <= (TEN_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
+		EncoderState = ENCODER_SCHEDULE_1_MINUTE_ON;
 		if(minuteOnSchedule1 < 49)
 		{
 			minuteOnSchedule1 = minuteOnSchedule1 + 10;
@@ -1115,6 +1116,7 @@ void MenuTFTSchedule1ActivityHourMinuteOFFAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +10M
 	else if((x >= TEN_MINUTE_ADD_SHEDULE_X)&&(x <= (TEN_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
+		EncoderState = ENCODER_SCHEDULE_1_MINUTE_OFF;
 		if(minuteOffSchedule1 < 49)
 		{
 			minuteOffSchedule1 = minuteOffSchedule1 + 10;
@@ -1187,6 +1189,121 @@ void MenuTFTSchedule2ActivityDayOfWeekRow(uint16_t x, uint16_t y)
 }
 
 //
+// Functions to change on screen hour and minute ON/OFF 2 schedule
+void schedule2HourOnIncrease(void)
+{
+	if(hourOnSchedule2 < 24)
+	{
+		hourOnSchedule2++;
+	}
+	else
+	{
+		hourOnSchedule2 = 1;
+	}
+	if(hourOnSchedule2 >= 10) sprintf((char*)Msg, " %d ", hourOnSchedule2);
+	else sprintf((char*)Msg, " 0%d ", hourOnSchedule2);
+	EF_PutString(Msg, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2HourOnDecrease(void)
+{
+	if(hourOnSchedule2 > 1)
+	{
+		hourOnSchedule2--;
+	}
+	else
+	{
+		hourOnSchedule2 = 24;
+	}
+	if(hourOnSchedule2 >= 10) sprintf((char*)Msg, " %d ", hourOnSchedule2);
+	else sprintf((char*)Msg, " 0%d ", hourOnSchedule2);
+	EF_PutString(Msg, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2MinuteOnIncrease(void)
+{
+	if(minuteOnSchedule2 < 59)
+	{
+		minuteOnSchedule2++;
+	}
+	else
+	{
+		minuteOnSchedule2 = 0;
+	}
+	if(minuteOnSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule2);
+	else sprintf((char*)Msg, " 0%d ", minuteOnSchedule2);
+	EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2MinuteOnDecrease(void)
+{
+	if(minuteOnSchedule2 > 0)
+	{
+		minuteOnSchedule2--;
+	}
+	else
+	{
+		minuteOnSchedule2 = 59;
+	}
+	if(minuteOnSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule2);
+	else sprintf((char*)Msg, " 0%d ", minuteOnSchedule2);
+	EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void schedule2HourOffIncrease(void)
+{
+	if(hourOffSchedule2 < 24)
+	{
+		hourOffSchedule2++;
+	}
+	else
+	{
+		hourOffSchedule2 = 1;
+	}
+	if(hourOffSchedule2 >= 10) sprintf((char*)Msg, " %d ", hourOffSchedule2);
+	else sprintf((char*)Msg, " 0%d ", hourOffSchedule2);
+	EF_PutString(Msg, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2HourOffDecrease(void)
+{
+	if(hourOffSchedule2 > 1)
+	{
+		hourOffSchedule2--;
+	}
+	else
+	{
+		hourOffSchedule2 = 24;
+	}
+	if(hourOffSchedule2 >= 10) sprintf((char*)Msg, " %d ", hourOffSchedule2);
+	else sprintf((char*)Msg, " 0%d ", hourOffSchedule2);
+	EF_PutString(Msg, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2MinuteOffIncrease(void)
+{
+	if(minuteOffSchedule2 < 59)
+	{
+		minuteOffSchedule2++;
+	}
+	else
+	{
+		minuteOffSchedule2 = 0;
+	}
+	if(minuteOffSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule2);
+	else sprintf((char*)Msg, " 0%d ", minuteOffSchedule2);
+	EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2MinuteOffDecrease(void)
+{
+	if(minuteOffSchedule2 > 0)
+	{
+		minuteOffSchedule2--;
+	}
+	else
+	{
+		minuteOffSchedule2 = 59;
+	}
+	if(minuteOffSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule2);
+	else sprintf((char*)Msg, " 0%d ", minuteOffSchedule2);
+	EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+//
 // Handle touch in Hour And Minute ON section
 void MenuTFTSchedule2ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 {
@@ -1194,39 +1311,21 @@ void MenuTFTSchedule2ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +1H
 	if((x >= ONE_HOUR_ADD_SHEDULE_X)&&(x <= (ONE_HOUR_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(hourOnSchedule2 < 24)
-		{
-			hourOnSchedule2++;
-		}
-		else
-		{
-			hourOnSchedule2 = 1;
-		}
-		if(hourOnSchedule2 >= 10) sprintf((char*)Msg, " %d ", hourOnSchedule2);
-		else sprintf((char*)Msg, " 0%d ", hourOnSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_HOUR_X-2 , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
-
+		schedule2HourOnIncrease();
+		EncoderState = ENCODER_SCHEDULE_2_HOUR_ON;
 	}
 
 	// Check if it is Hour to add +1M
 	else if((x >= ONE_MINUTE_ADD_SHEDULE_X)&&(x <= (ONE_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(minuteOnSchedule2 < 59)
-		{
-			minuteOnSchedule2++;
-		}
-		else
-		{
-			minuteOnSchedule2 = 0;
-		}
-		if(minuteOnSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule2);
-		else sprintf((char*)Msg, " 0%d ", minuteOnSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		schedule2MinuteOnIncrease();
+		EncoderState = ENCODER_SCHEDULE_2_MINUTE_ON;
 	}
 
 	// Check if it is Hour to add +10M
 	else if((x >= TEN_MINUTE_ADD_SHEDULE_X)&&(x <= (TEN_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
+		EncoderState = ENCODER_SCHEDULE_2_MINUTE_ON;
 		if(minuteOnSchedule2 < 49)
 		{
 			minuteOnSchedule2 = minuteOnSchedule2 + 10;
@@ -1249,39 +1348,21 @@ void MenuTFTSchedule2ActivityHourMinuteOFFAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +1H
 	if((x >= ONE_HOUR_ADD_SHEDULE_X)&&(x <= (ONE_HOUR_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(hourOffSchedule2 < 24)
-		{
-			hourOffSchedule2++;
-		}
-		else
-		{
-			hourOffSchedule2 = 1;
-		}
-		if(hourOffSchedule2 >= 10) sprintf((char*)Msg, " %d ", hourOffSchedule2);
-		else sprintf((char*)Msg, " 0%d ", hourOffSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_HOUR_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
-
+		schedule2HourOffIncrease();
+		EncoderState = ENCODER_SCHEDULE_2_HOUR_OFF;
 	}
 
 	// Check if it is Hour to add +1M
 	else if((x >= ONE_MINUTE_ADD_SHEDULE_X)&&(x <= (ONE_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(minuteOffSchedule2 < 59)
-		{
-			minuteOffSchedule2++;
-		}
-		else
-		{
-			minuteOffSchedule2 = 0;
-		}
-		if(minuteOffSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule2);
-		else sprintf((char*)Msg, " 0%d ", minuteOffSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		schedule2MinuteOffIncrease();
+		EncoderState = ENCODER_SCHEDULE_2_MINUTE_OFF;
 	}
 
 	// Check if it is Hour to add +10M
 	else if((x >= TEN_MINUTE_ADD_SHEDULE_X)&&(x <= (TEN_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
+		EncoderState = ENCODER_SCHEDULE_2_MINUTE_OFF;
 		if(minuteOffSchedule2 < 49)
 		{
 			minuteOffSchedule2 = minuteOffSchedule2 + 10;
