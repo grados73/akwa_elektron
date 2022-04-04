@@ -2351,6 +2351,39 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 					{
 						TenSecondsActivitiesDurationIncrease();
 					}
+					//Schedules
+					else if (EncoderState == ENCODER_SCHEDULE_1_HOUR_ON)
+					{
+						schedule1HourOnIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_MINUTE_ON)
+					{
+						schedule1MinuteOnIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_HOUR_OFF)
+					{
+						schedule1HourOffIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_MINUTE_OFF)
+					{
+						schedule1MinuteOffIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_HOUR_ON)
+					{
+						schedule2HourOnIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_MINUTE_ON)
+					{
+						schedule2MinuteOnIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_HOUR_OFF)
+					{
+						schedule2HourOffIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_MINUTE_OFF)
+					{
+						schedule2MinuteOffIncrease();
+					}
 				}
 				RotateUpgradeNumber = 0;
 				EncoderCounterPrevious = EncoderCounter;
@@ -2400,6 +2433,39 @@ void encoderUpgrade(int16_t *EncoderCntWsk)
 					else if(EncoderState == ENCODER_ACTIVITIES)
 					{
 						TenSecondsActivitiesDurationDecrease();
+					}
+					//Schedules
+					else if (EncoderState == ENCODER_SCHEDULE_1_HOUR_ON)
+					{
+						schedule1HourOnDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_MINUTE_ON)
+					{
+						schedule1MinuteOnDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_HOUR_OFF)
+					{
+						schedule1HourOffDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_MINUTE_OFF)
+					{
+						schedule1MinuteOffDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_HOUR_ON)
+					{
+						schedule2HourOnDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_MINUTE_ON)
+					{
+						schedule2MinuteOnDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_HOUR_OFF)
+					{
+						schedule2HourOffDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_MINUTE_OFF)
+					{
+						schedule2MinuteOffDecrease();
 					}
 				}
 				EncoderCounterPrevious = EncoderCounter;

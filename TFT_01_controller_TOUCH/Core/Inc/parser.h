@@ -4,6 +4,7 @@
  *  Created on: Jul 7, 2021
  *      Author: grad_
  */
+#pragma once
 
 #ifndef INC_PARSER_H_
 #define INC_PARSER_H_

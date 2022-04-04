@@ -6,7 +6,7 @@
  *
  */
 
-
+#pragma once
 
 #ifndef INC_FUNCTIONS_H_
 #define INC_FUNCTIONS_H_
