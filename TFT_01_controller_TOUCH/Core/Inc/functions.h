@@ -6,7 +6,7 @@
  *
  */
 
-#pragma once
+
 
 #ifndef INC_FUNCTIONS_H_
 #define INC_FUNCTIONS_H_
@@ -111,7 +111,7 @@
 
 #define NUMBER_OF_AVAILABLE_SCHEDULES 2
 
-uint8_t Msg[64]; // Message to receive/send UART
+
 
 //
 // Prototype of functions

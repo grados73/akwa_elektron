@@ -74,7 +74,9 @@
 //
 UARTDMA_HandleTypeDef huartdma2;	// to second uC
 UARTDMA_HandleTypeDef huartdma1;	// to ESP
-I2C_HandleTypeDef hi2c1;
+//I2C_HandleTypeDef hi2c1;
+
+uint8_t MsgMain[64]= {0};
 //
 // To update current displayed clock - current TFT screen displayed
 extern MenuTFTState State;
@@ -329,10 +331,10 @@ void Error_Handler(void)
 
 	ILI9341_ClearDisplay(ILI9341_RED);
 	EF_SetFont(&arial_11ptFontInfo);
-	sprintf((char*)Msg, "Error in Function: %s\n", __FILE__);
-	EF_PutString(Msg, ERROR_FILE_POZ_X, ERROR_FILE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_RED);
-	sprintf((char*)Msg, "Function: %s, Line: %d\n",__func__, (int)__LINE__);
-	EF_PutString(Msg, ERROR_FUNC_AND_LINE_POZ_X, ERROR_FUNC_AND_LINE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_RED);
+	sprintf((char*)MsgMain, "Error in Function: %s\n", __FILE__);
+	EF_PutString(MsgMain, ERROR_FILE_POZ_X, ERROR_FILE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_RED);
+	sprintf((char*)MsgMain, "Function: %s, Line: %d\n",__func__, (int)__LINE__);
+	EF_PutString(MsgMain, ERROR_FUNC_AND_LINE_POZ_X, ERROR_FUNC_AND_LINE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_RED);
 
   __disable_irq();
 
