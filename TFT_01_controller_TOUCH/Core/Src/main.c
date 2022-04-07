@@ -74,7 +74,9 @@
 //
 UARTDMA_HandleTypeDef huartdma2;	// to second uC
 UARTDMA_HandleTypeDef huartdma1;	// to ESP
-//I2C_HandleTypeDef hi2c1;
+
+// !! to check multiple definition of hi2c
+// I2C_HandleTypeDef hi2c1;
 
 uint8_t MsgMain[64]= {0};
 //

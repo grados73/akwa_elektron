@@ -13464,7 +13464,7 @@ void Error_Handler(void)
  80062b6:	480f      	ldr	r0, [pc, #60]	; (80062f4 <Error_Handler+0x6c>)
  80062b8:	f7fb fd78 	bl	8001dac <EF_PutString>
 	sprintf((char*)MsgMain, "Function: %s, Line: %d\n",__func__, (int)__LINE__);
- 80062bc:	f44f 73a8 	mov.w	r3, #336	; 0x150
+ 80062bc:	f44f 73a9 	mov.w	r3, #338	; 0x152
  80062c0:	4a0d      	ldr	r2, [pc, #52]	; (80062f8 <Error_Handler+0x70>)
  80062c2:	490e      	ldr	r1, [pc, #56]	; (80062fc <Error_Handler+0x74>)
  80062c4:	480b      	ldr	r0, [pc, #44]	; (80062f4 <Error_Handler+0x6c>)

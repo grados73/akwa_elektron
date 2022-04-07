@@ -5,7 +5,7 @@
  *      Author: grad_
  */
 
-
+#pragma once
 
 #ifndef INC_FUNCTIONS_H_
 #define INC_FUNCTIONS_H_
@@ -16,14 +16,14 @@
 #include "bmp280.h"
 
 
-float Temp, Pressure;
+
 
 struct Measurements{
 	float Temp;
 	float Pressure;
 };
 
-BMP280_t Bmp280;
+
 
 void bmp280_init(void);
 struct Measurements temp_pressure_measurement(void);

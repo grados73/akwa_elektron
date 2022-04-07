@@ -10,6 +10,8 @@
 #define BMP280_ADDRESS 0x76
 struct Measurements BMPResults;
 
+float Temp, Pressure;
+BMP280_t Bmp280;
 
 void bmp280_init(void)
 {
