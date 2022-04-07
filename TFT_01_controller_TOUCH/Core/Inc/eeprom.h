@@ -88,7 +88,7 @@ HAL_StatusTypeDef eeprom_write(uint32_t addr, const void* data, uint32_t size);
 *	53	-	0x35	-	LIGHT 3 STATE
 *	54	-	0x36	-	LIGHT 4 STATE
 *	55	-	0x37	-
-*	56	-	0x38	-
+*	56	-	0x38	-	ACTIVITIES TIME X10 SECONDS
 *	57	-	0x39	-
 *	58	-	0x3A	-
 *	59	-	0x3B	-
@@ -216,6 +216,8 @@ HAL_StatusTypeDef eeprom_write(uint32_t addr, const void* data, uint32_t size);
 #define EEPROM_ADR_LIGHT_3_STATE 0x35
 #define EEPROM_ADR_LIGHT_4_STATE 0x36
 
+#define EEPROM_ADR_ACTIVITIES_IN_10S 0x38
+
 
 //
 // Functions initializations
@@ -255,6 +257,10 @@ void EEPROM_ScheduleMinuteOnUpdate(uint8_t NrOfSchedule, uint8_t  minuteOn);
 void EEPROM_ScheduleHourOffUpdate(uint8_t NrOfSchedule, uint8_t  hourOff);
 void EEPROM_ScheduleMinuteOffUpdate(uint8_t NrOfSchedule, uint8_t  minuteOff);
 
+//
+// Read and set time in seconds of activities duration
+uint32_t EEPROM_ActivitiesTimeRead(uint8_t NrOfActivities); // Function return time in SECONDS of activities
+void EEPROM_ActivitiesTimeUpdate(uint8_t NrOfActivities, uint32_t TimeInSeconds);
 
 
 #endif /* INC_EEPROM_H_ */

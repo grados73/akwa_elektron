@@ -51,8 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-//BMP280_t Bmp280;
-struct Measurements BMPResults;
+extern struct Measurements BMPResults;
 float CTemp, CPressure;
 
 UARTDMA_HandleTypeDef huartdma2;

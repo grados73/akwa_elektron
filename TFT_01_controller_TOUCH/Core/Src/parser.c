@@ -16,7 +16,7 @@
 #include "menuTFT.h"
 
 extern UARTDMA_HandleTypeDef huartdma2;
-char Message[BUFFOR_SIZE]; // Transmit buffer
+char MessageP[BUFFOR_SIZE]; // Transmit buffer
 char MyName[32] = {"MASTER1"}; // Name string
 uint8_t ChangingStateFlag;
 extern struct Measurements BMPResults;
@@ -31,8 +31,9 @@ uint32_t CDist2water = 0;
 uint8_t Time[3] = {0,0,0};
 uint8_t SwitchesButtonState[4] = {0,0,0,0};
 uint8_t LightsButtonState[4] = {0,0,0,0};
-uint8_t ActivityButtonState[2] = {0,0};
+//uint8_t ActivityButtonState[2] = {0,0};
 extern uint8_t NrOfLeds;
+uint8_t MsgParse[64] = {0};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,8 +187,8 @@ void UART_ParseAnswTemp()
 				if(NrCzujnika == 1)
 				{
 						EF_SetFont(&arialBlack_20ptFontInfo);
-						sprintf((char*)Msg, "Temp. zewn: %.2f`C ", CTemp);
-						EF_PutString(Msg, TEMP_ZEW_POZ_X, TEMP_ZEW_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+						sprintf((char*)MsgParse, "Temp. zewn: %.2f`C ", CTemp);
+						EF_PutString(MsgParse, TEMP_ZEW_POZ_X, TEMP_ZEW_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 						ESP_SendCurrentTempOutside(CTemp);
 				}
 				else if(NrCzujnika == 2)
@@ -196,14 +197,14 @@ void UART_ParseAnswTemp()
 							{
 							CTemp = LCTemp;
 							EF_SetFont(&arialBlack_20ptFontInfo);
-							sprintf((char*)Msg, "Temp. wewn: %.2f`C ", CTemp);
-							EF_PutString(Msg, TEMP_WEW_POZ_X, TEMP_WEW_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+							sprintf((char*)MsgParse, "Temp. wewn: %.2f`C ", CTemp);
+							EF_PutString(MsgParse, TEMP_WEW_POZ_X, TEMP_WEW_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 							}
 						else
 						{
 							EF_SetFont(&arialBlack_20ptFontInfo);
-							sprintf((char*)Msg, "Temp. wewn: %.2f`C ", CTemp);
-							EF_PutString(Msg, TEMP_WEW_POZ_X, TEMP_WEW_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+							sprintf((char*)MsgParse, "Temp. wewn: %.2f`C ", CTemp);
+							EF_PutString(MsgParse, TEMP_WEW_POZ_X, TEMP_WEW_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 							LCTemp = CTemp;
 							ESP_SendCurrentTempInside(CTemp);
 						}
@@ -229,8 +230,8 @@ void UART_ParseAnswPres()
 		if(State == MENUTFT_PARAMETERS)
 		{
 			EF_SetFont(&arialBlack_20ptFontInfo);
-			sprintf((char*)Msg, "Ciśnienie: %.1fhPa ", CPres);
-			EF_PutString(Msg, CISN_POZ_X, CISN_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+			sprintf((char*)MsgParse, "Ciśnienie: %.1fhPa ", CPres);
+			EF_PutString(MsgParse, CISN_POZ_X, CISN_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 			ESP_SendCurrentPressure(CPres);
 		}
 		//UARTDMA_Print(&huartdma2, "PRESUPSUC\n");
@@ -252,8 +253,8 @@ void UART_ParseAnswDist()
 		if(State == MENUTFT_PARAMETERS)
 		{
 			EF_SetFont(&arialBlack_20ptFontInfo);
-			sprintf((char*)Msg, "-%ldmm  ", CDist2water);
-			EF_PutString(Msg, POZ_WODY_POZ_X+153, POZ_WODY_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+			sprintf((char*)MsgParse, "-%ldmm  ", CDist2water);
+			EF_PutString(MsgParse, POZ_WODY_POZ_X+153, POZ_WODY_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 			ESP_SendCurrentWaterLvl(CDist2water);
 		}
 		//UARTDMA_Print(&huartdma2, "PRESUPSUC\n");
@@ -288,8 +289,8 @@ void UART_ParseAnswRelayStateStatus()
 			{
 				if((ParsePointer[j] < '0' || ParsePointer[j] > '9') && ParsePointer[j] != '.' ) // Check if there are only numbers or dot sign
 				{
-					sprintf(Message, "ERROR_WRONG_VALUE\n"); // If not, Error message
-					UARTDMA_Print(&huartdma2, Message); // Print message
+					sprintf(MessageP, "ERROR_WRONG_VALUE\n"); // If not, Error message
+					UARTDMA_Print(&huartdma2, MessageP); // Print message
 					return;	// And exit parsing
 				}
 				SwitchesButtonState[i] = atoi(ParsePointer); // If there are no chars, change string to integer
@@ -297,8 +298,8 @@ void UART_ParseAnswRelayStateStatus()
 		}
 		else
 		{
-			sprintf(Message, "ERROR_TOO_LESS_PARAMETERS\n"); // If not, Error message
-			UARTDMA_Print(&huartdma2, Message); // Print message
+			sprintf(MessageP, "ERROR_TOO_LESS_PARAMETERS\n"); // If not, Error message
+			UARTDMA_Print(&huartdma2, MessageP); // Print message
 			return;	// And exit parsing
 		}
 		//Update current displaying sate fo buttons
@@ -322,8 +323,8 @@ void UART_ParseAnswLightsStateStatus()
 			{
 				if((ParsePointer[j] < '0' || ParsePointer[j] > '9') && ParsePointer[j] != '.' ) // Check if there are only numbers or dot sign
 				{
-					sprintf(Message, "ERROR_WRONG_VALUE\n"); // If not, Error message
-					UARTDMA_Print(&huartdma2, Message); // Print message
+					sprintf(MessageP, "ERROR_WRONG_VALUE\n"); // If not, Error message
+					UARTDMA_Print(&huartdma2, MessageP); // Print message
 					return;	// And exit parsing
 				}
 				// Main action to write value
@@ -332,8 +333,8 @@ void UART_ParseAnswLightsStateStatus()
 		}
 		else
 		{
-			sprintf(Message, "ERROR_TOO_LESS_PARAMETERS\n"); // If not, Error message
-			UARTDMA_Print(&huartdma2, Message); // Print message
+			sprintf(MessageP, "ERROR_TOO_LESS_PARAMETERS\n"); // If not, Error message
+			UARTDMA_Print(&huartdma2, MessageP); // Print message
 			return;	// And exit parsing
 		}
 		//draw button with current state
@@ -469,8 +470,8 @@ uint8_t SendComand(uint8_t Command)
 			break;
 		case UCMD_WS_NUMBER_LED:
 			if(NrOfLeds < 9) NrOfLeds = 9; // Minimum number of Leds is 9
-			sprintf(Message, "CHLIGHT=9,%d\n", NrOfLeds);
-			UARTDMA_Print(&huartdma2, Message); // Print message
+			sprintf(MessageP, "CHLIGHT=9,%d\n", NrOfLeds);
+			UARTDMA_Print(&huartdma2, MessageP); // Print message
 			break;
 		case UCMD_WS_ANIMATION_SUNRISE:
 			UARTDMA_Print(&huartdma2, "CHLIGHT=8,1\n");

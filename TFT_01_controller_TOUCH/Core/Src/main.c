@@ -74,10 +74,15 @@
 //
 UARTDMA_HandleTypeDef huartdma2;	// to second uC
 UARTDMA_HandleTypeDef huartdma1;	// to ESP
-I2C_HandleTypeDef hi2c1;
+
+// !! to check multiple definition of hi2c
+// I2C_HandleTypeDef hi2c1;
+
+uint8_t MsgMain[64]= {0};
 //
 // To update current displayed clock - current TFT screen displayed
 extern MenuTFTState State;
+extern uint32_t activitiesDurationTimeInSeconds;
 //
 // To count time duration Activity
 uint8_t FeedingCounter = 0;
@@ -159,7 +164,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim11);
 
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
-  int16_t EncoderPrevValue = 0;
+
   int16_t EncoderValue = 0;
   /* USER CODE END 2 */
 
@@ -206,6 +211,7 @@ int main(void)
 	  ////////////////////////////////////////////////////////
 
 	  EncoderValue = __HAL_TIM_GET_COUNTER(&htim2);
+	  encoderUpgrade(&EncoderValue);
 
     /* USER CODE END WHILE */
 
@@ -288,7 +294,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if(htim->Instance == TIM10) // Update even each second - one per second 1/s
 	{
 		//TODO! Make possibility to change FEEDING_TIME_IN_S
-		if(FeedingCounter >= FEEDING_TIME_IN_S) // timer to count seconds from start feeding to turn off this activity
+		if(FeedingCounter >= activitiesDurationTimeInSeconds) // timer to count seconds from start feeding to turn off this activity
 		{
 			HAL_GPIO_TogglePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
 			predefinedActivityKarmienie(0);
@@ -327,10 +333,10 @@ void Error_Handler(void)
 
 	ILI9341_ClearDisplay(ILI9341_RED);
 	EF_SetFont(&arial_11ptFontInfo);
-	sprintf((char*)Msg, "Error in Function: %s\n", __FILE__);
-	EF_PutString(Msg, ERROR_FILE_POZ_X, ERROR_FILE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_RED);
-	sprintf((char*)Msg, "Function: %s, Line: %d\n",__func__, (int)__LINE__);
-	EF_PutString(Msg, ERROR_FUNC_AND_LINE_POZ_X, ERROR_FUNC_AND_LINE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_RED);
+	sprintf((char*)MsgMain, "Error in Function: %s\n", __FILE__);
+	EF_PutString(MsgMain, ERROR_FILE_POZ_X, ERROR_FILE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_RED);
+	sprintf((char*)MsgMain, "Function: %s, Line: %d\n",__func__, (int)__LINE__);
+	EF_PutString(MsgMain, ERROR_FUNC_AND_LINE_POZ_X, ERROR_FUNC_AND_LINE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_RED);
 
   __disable_irq();
 

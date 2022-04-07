@@ -46,14 +46,32 @@ uint8_t hourOffSchedule2 = 0;
 uint8_t minuteOnSchedule2 = 0;
 uint8_t minuteOffSchedule2 = 0;
 
+uint32_t activitiesDurationTimeInSeconds = 0;
+
+int16_t EncoderCounter = 0;
+int16_t EncoderCounterPrevious = 0;
+int16_t RotateUpgradeNumber = 0;
+
 extern UARTDMA_HandleTypeDef huartdma1;
 
 extern int16_t EncoderPrevValue;
 extern int16_t EncoderValue;
 
+uint8_t MsgMenuTFT[64]= {0}; // Message to receive/send UART
+
 uint32_t TimerTouch = 0; // Timer to debouncing function
 
 MenuTFTState State = MENUTFT_INIT; // Initialization state for MenuTFT State Machine
+
+EncoderRotateState EncoderState = ENCODER_IDLE; // Initialization state for Encoder
+
+void OneMinuteIncrease(void);
+void OneHourIncrease(void);
+void OneDayIncrease(void);
+
+void OneMinuteDecrease(void);
+void OneHourDecrease(void);
+void OneHourDecrease(void);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,6 +92,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showCurrentParameters(CTemp, 0, 0, 0, CPres);
+			EncoderState = ENCODER_IDLE;
 			StateChangeFlag = 0;
 		}
 		TouchParametersActivity();
@@ -82,6 +101,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showControlPanel();
+			EncoderState = ENCODER_IDLE;
 			StateChangeFlag = 0;
 		}
 		TouchSwitchActivity();
@@ -90,6 +110,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showLightsControlPanel();
+			EncoderState = ENCODER_IDLE;
 			StateChangeFlag = 0;
 		}
 		TouchLightsActivity();
@@ -98,6 +119,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showClockSetPanel();
+			EncoderState = ENCODER_IDLE;
 			ClockChangeFlag = 1;
 			StateChangeFlag = 0;
 		}
@@ -107,6 +129,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showPreparedActivitiesPanel();
+			EncoderState = ENCODER_ACTIVITIES;
 			StateChangeFlag = 0;
 		}
 		TouchPredefinedActivityActivity();
@@ -115,6 +138,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showWSLedPanel();
+			EncoderState = ENCODER_WS_LED;
 			WSLedChangeFlag = 1;
 			StateChangeFlag = 0;
 		}
@@ -124,6 +148,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showSchedule1Panel();
+			EncoderState = ENCODER_IDLE;
 			ScheduleChangeFlag = 1;
 			StateChangeFlag = 0;
 		}
@@ -133,6 +158,7 @@ void MenuTFT(void)
 		if(StateChangeFlag == 1) // make only one time
 		{
 			showSchedule2Panel();
+			EncoderState = ENCODER_IDLE;
 			ScheduleChangeFlag = 1;
 			StateChangeFlag = 0;
 		}
@@ -334,6 +360,7 @@ void TouchClockActivity(void)
 						(y >= LEFT_BUTTON_Y)&&(y <= (LEFT_BUTTON_Y + LEFT_BUTTON_H)))
 				{
 					State = MENUTFT_PARAMETERS;
+					EncoderState = ENCODER_IDLE;
 					StateChangeFlag = 1;
 				}
 
@@ -345,8 +372,8 @@ void TouchClockActivity(void)
 					DS3231_SetHour(Hours);
 					DS3231_SetMinute(Minutes);
 					DS3231_SetSecond(50);
-					sprintf((char*)Msg, "-Time Changed-");
-					EF_PutString(Msg, CLOCK_STRING_POZ_X, CLOCK_STRING_POZ_Y, ILI9341_GREEN, BG_COLOR, ILI9341_LIGHTGREY);
+					sprintf((char*)MsgMenuTFT, "-Time Changed-");
+					EF_PutString(MsgMenuTFT, CLOCK_STRING_POZ_X, CLOCK_STRING_POZ_Y, ILI9341_GREEN, BG_COLOR, ILI9341_LIGHTGREY);
 				}
 
 				// Check if that point is inside the Medium Button - change screen to Schedule  screen
@@ -354,6 +381,7 @@ void TouchClockActivity(void)
 						(y >= MEDIUM_BUTTON_CLOCK_Y)&&(y <= (MEDIUM_BUTTON_CLOCK_Y + MEDIUM_BUTTON_H_CLOCK)))
 				{
 					State = MENUTFT_SCHEDULE_1;
+					EncoderState = ENCODER_IDLE;
 					StateChangeFlag = 1;
 				}
 
@@ -403,6 +431,16 @@ void TouchPredefinedActivityActivity()
 			{
 				State = MENUTFT_SWITCH;
 				StateChangeFlag = 1;
+			}
+
+			// Check if that point is inside the RIGHT Button - Confirmed changed clock
+			else if((x >= RIGHT_BUTTON_X)&&(x <= (RIGHT_BUTTON_X+RIGHT_BUTTON_W))&&
+					(y >= RIGHT_BUTTON_Y)&&(y <= (RIGHT_BUTTON_Y + RIGHT_BUTTON_H)))
+			{
+				EF_SetFont(&arialBlack_20ptFontInfo);
+				EEPROM_ActivitiesTimeUpdate(1, activitiesDurationTimeInSeconds);
+				sprintf((char*)MsgMenuTFT, "-Time Changed-");
+				EF_PutString(MsgMenuTFT, CLOCK_STRING_POZ_X, CLOCK_STRING_POZ_Y, ILI9341_GREEN, BG_COLOR, ILI9341_LIGHTGREY);
 			}
 
 			//
@@ -549,13 +587,13 @@ void Schedule1Activity()
 				EEPROM_ScheduleRelayAndSwitchTabUpdate(1, schedule1RelayAndSwitchTab);
 
 				EF_SetFont(&arialBlack_20ptFontInfo);
-				sprintf((char*)Msg, " H1 ZMIENIONY      ");
-				EF_PutString(Msg, CLOCK_STRING_POZ_X-7, SWIATLA_STRING_POZ_Y, ILI9341_ORANGE, BG_COLOR, ILI9341_LIGHTGREY);
+				sprintf((char*)MsgMenuTFT, " H1 ZMIENIONY      ");
+				EF_PutString(MsgMenuTFT, CLOCK_STRING_POZ_X-7, SWIATLA_STRING_POZ_Y, ILI9341_ORANGE, BG_COLOR, ILI9341_LIGHTGREY);
 
 				EF_SetFont(&arial_11ptFontInfo);
 				GFX_DrawFillRoundRectangle(MEDIUM_BUTTON_X, MEDIUM_BUTTON_Y, MEDIUM_BUTTON_W, MEDIUM_BUTTON_H, RIGHT_LEFT_BUTTON_R,  ILI9341_GREEN);
-				sprintf((char*)Msg, " >POTW<");
-				EF_PutString(Msg, (MEDIUM_BUTTON_X + 6), (MEDIUM_BUTTON_Y + 2), ILI9341_BLACK, BG_TRANSPARENT, ILI9341_GREEN);
+				sprintf((char*)MsgMenuTFT, " >POTW<");
+				EF_PutString(MsgMenuTFT, (MEDIUM_BUTTON_X + 6), (MEDIUM_BUTTON_Y + 2), ILI9341_BLACK, BG_TRANSPARENT, ILI9341_GREEN);
 				//TODO! Day of week
 			}
 			TimerTouch = HAL_GetTick();
@@ -632,13 +670,13 @@ void Schedule2Activity()
 				EEPROM_ScheduleRelayAndSwitchTabUpdate(2, schedule2RelayAndSwitchTab);
 
 				EF_SetFont(&arialBlack_20ptFontInfo);
-				sprintf((char*)Msg, " H2 ZMIENIONY       ");
-				EF_PutString(Msg, CLOCK_STRING_POZ_X-7, SWIATLA_STRING_POZ_Y, ILI9341_ORANGE, BG_COLOR, ILI9341_LIGHTGREY);
+				sprintf((char*)MsgMenuTFT, " H2 ZMIENIONY       ");
+				EF_PutString(MsgMenuTFT, CLOCK_STRING_POZ_X-7, SWIATLA_STRING_POZ_Y, ILI9341_ORANGE, BG_COLOR, ILI9341_LIGHTGREY);
 
 				EF_SetFont(&arial_11ptFontInfo);
 				GFX_DrawFillRoundRectangle(MEDIUM_BUTTON_X, MEDIUM_BUTTON_Y, MEDIUM_BUTTON_W, MEDIUM_BUTTON_H, RIGHT_LEFT_BUTTON_R,  ILI9341_GREEN);
-				sprintf((char*)Msg, " >POTW<");
-				EF_PutString(Msg, (MEDIUM_BUTTON_X + 6), (MEDIUM_BUTTON_Y + 2), ILI9341_BLACK, BG_TRANSPARENT, ILI9341_GREEN);
+				sprintf((char*)MsgMenuTFT, " >POTW<");
+				EF_PutString(MsgMenuTFT, (MEDIUM_BUTTON_X + 6), (MEDIUM_BUTTON_Y + 2), ILI9341_BLACK, BG_TRANSPARENT, ILI9341_GREEN);
 				// TODO! Add day of week
 			}
 			TimerTouch = HAL_GetTick();
@@ -899,6 +937,126 @@ void changeTFTScheduleRelayLights(uint8_t NrOfRS, uint8_t NewState)
 }
 
 //
+// Functions to change on screen hour and minute ON/OFF  1 schedule
+void schedule1HourOnIncrease(void)
+{
+	if(hourOnSchedule1 < 24)
+	{
+		hourOnSchedule1++;
+	}
+	else
+	{
+		hourOnSchedule1 = 1;
+	}
+	if(hourOnSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", hourOnSchedule1);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", hourOnSchedule1);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule1HourOnDecrease(void)
+{
+	if(hourOnSchedule1 > 1)
+	{
+		hourOnSchedule1--;
+	}
+	else
+	{
+		hourOnSchedule1 = 24;
+	}
+	if(hourOnSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", hourOnSchedule1);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", hourOnSchedule1);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule1MinuteOnIncrease(void)
+{
+	if(minuteOnSchedule1 < 59)
+	{
+		minuteOnSchedule1++;
+	}
+	else
+	{
+		minuteOnSchedule1 = 0;
+	}
+	if(minuteOnSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOnSchedule1);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOnSchedule1);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule1MinuteOnDecrease(void)
+{
+	if(minuteOnSchedule1 > 0)
+	{
+		minuteOnSchedule1--;
+	}
+	else
+	{
+		minuteOnSchedule1 = 59;
+	}
+	if(minuteOnSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOnSchedule1);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOnSchedule1);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void schedule1HourOffIncrease(void)
+{
+	if(hourOffSchedule1 < 24)
+	{
+		hourOffSchedule1++;
+	}
+	else
+	{
+		hourOffSchedule1 = 1;
+	}
+	if(hourOffSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", hourOffSchedule1);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", hourOffSchedule1);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule1HourOffDecrease(void)
+{
+	if(hourOffSchedule1 > 1)
+	{
+		hourOffSchedule1--;
+	}
+	else
+	{
+		hourOffSchedule1 = 24;
+	}
+	if(hourOffSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", hourOffSchedule1);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", hourOffSchedule1);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule1MinuteOffIncrease(void)
+{
+	if(minuteOffSchedule1 < 59)
+	{
+		minuteOffSchedule1++;
+	}
+	else
+	{
+		minuteOffSchedule1 = 0;
+	}
+	if(minuteOffSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOffSchedule1);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOffSchedule1);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule1MinuteOffDecrease(void)
+{
+	if(minuteOffSchedule1 > 0)
+	{
+		minuteOffSchedule1--;
+	}
+	else
+	{
+		minuteOffSchedule1 = 59;
+	}
+	if(minuteOffSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOffSchedule1);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOffSchedule1);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+
+//
+
+
+//
 // Handle touch in Hour And Minute ON section
 void MenuTFTSchedule1ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 {
@@ -906,39 +1064,22 @@ void MenuTFTSchedule1ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +1H
 	if((x >= ONE_HOUR_ADD_SHEDULE_X)&&(x <= (ONE_HOUR_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(hourOnSchedule1 < 24)
-		{
-			hourOnSchedule1++;
-		}
-		else
-		{
-			hourOnSchedule1 = 1;
-		}
-		if(hourOnSchedule1 >= 10) sprintf((char*)Msg, " %d ", hourOnSchedule1);
-		else sprintf((char*)Msg, " 0%d ", hourOnSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		EncoderState = ENCODER_SCHEDULE_1_HOUR_ON;
+		schedule1HourOnIncrease();
 
 	}
 
-	// Check if it is Hour to add +1M
+	// Check if it is Minute to add +1M
 	else if((x >= ONE_MINUTE_ADD_SHEDULE_X)&&(x <= (ONE_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(minuteOnSchedule1 < 59)
-		{
-			minuteOnSchedule1++;
-		}
-		else
-		{
-			minuteOnSchedule1 = 0;
-		}
-		if(minuteOnSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule1);
-		else sprintf((char*)Msg, " 0%d ", minuteOnSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		schedule1MinuteOnIncrease();
+		EncoderState = ENCODER_SCHEDULE_1_MINUTE_ON;
 	}
 
 	// Check if it is Hour to add +10M
 	else if((x >= TEN_MINUTE_ADD_SHEDULE_X)&&(x <= (TEN_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
+		EncoderState = ENCODER_SCHEDULE_1_MINUTE_ON;
 		if(minuteOnSchedule1 < 49)
 		{
 			minuteOnSchedule1 = minuteOnSchedule1 + 10;
@@ -947,9 +1088,9 @@ void MenuTFTSchedule1ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 		{
 			minuteOnSchedule1 = (minuteOnSchedule1 + 10) % 60;
 		}
-		if(minuteOnSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule1);
-		else sprintf((char*)Msg, " 0%d ", minuteOnSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		if(minuteOnSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOnSchedule1);
+		else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOnSchedule1);
+		EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 	}
 }
 
@@ -961,39 +1102,23 @@ void MenuTFTSchedule1ActivityHourMinuteOFFAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +1H
 	if((x >= ONE_HOUR_ADD_SHEDULE_X)&&(x <= (ONE_HOUR_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(hourOffSchedule1 < 24)
-		{
-			hourOffSchedule1++;
-		}
-		else
-		{
-			hourOffSchedule1 = 1;
-		}
-		if(hourOffSchedule1 >= 10) sprintf((char*)Msg, " %d ", hourOffSchedule1);
-		else sprintf((char*)Msg, " 0%d ", hourOffSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		schedule1HourOffIncrease();
+		EncoderState = ENCODER_SCHEDULE_1_HOUR_OFF;
 
 	}
 
-	// Check if it is Hour to add +1M
+	// Check if it is Minute to add +1M
 	else if((x >= ONE_MINUTE_ADD_SHEDULE_X)&&(x <= (ONE_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(minuteOffSchedule1 < 59)
-		{
-			minuteOffSchedule1++;
-		}
-		else
-		{
-			minuteOffSchedule1 = 0;
-		}
-		if(minuteOffSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule1);
-		else sprintf((char*)Msg, " 0%d ", minuteOffSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		EncoderState = ENCODER_SCHEDULE_1_MINUTE_OFF;
+		schedule1MinuteOffIncrease();
+
 	}
 
 	// Check if it is Hour to add +10M
 	else if((x >= TEN_MINUTE_ADD_SHEDULE_X)&&(x <= (TEN_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
+		EncoderState = ENCODER_SCHEDULE_1_MINUTE_OFF;
 		if(minuteOffSchedule1 < 49)
 		{
 			minuteOffSchedule1 = minuteOffSchedule1 + 10;
@@ -1002,9 +1127,9 @@ void MenuTFTSchedule1ActivityHourMinuteOFFAdd(uint16_t x, uint16_t y)
 		{
 			minuteOffSchedule1 = (minuteOffSchedule1 + 10) % 60;
 		}
-		if(minuteOffSchedule1 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule1);
-		else sprintf((char*)Msg, " 0%d ", minuteOffSchedule1);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		if(minuteOffSchedule1 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOffSchedule1);
+		else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOffSchedule1);
+		EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1066,6 +1191,121 @@ void MenuTFTSchedule2ActivityDayOfWeekRow(uint16_t x, uint16_t y)
 }
 
 //
+// Functions to change on screen hour and minute ON/OFF 2 schedule
+void schedule2HourOnIncrease(void)
+{
+	if(hourOnSchedule2 < 24)
+	{
+		hourOnSchedule2++;
+	}
+	else
+	{
+		hourOnSchedule2 = 1;
+	}
+	if(hourOnSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", hourOnSchedule2);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", hourOnSchedule2);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2HourOnDecrease(void)
+{
+	if(hourOnSchedule2 > 1)
+	{
+		hourOnSchedule2--;
+	}
+	else
+	{
+		hourOnSchedule2 = 24;
+	}
+	if(hourOnSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", hourOnSchedule2);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", hourOnSchedule2);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_HOUR_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2MinuteOnIncrease(void)
+{
+	if(minuteOnSchedule2 < 59)
+	{
+		minuteOnSchedule2++;
+	}
+	else
+	{
+		minuteOnSchedule2 = 0;
+	}
+	if(minuteOnSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOnSchedule2);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOnSchedule2);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2MinuteOnDecrease(void)
+{
+	if(minuteOnSchedule2 > 0)
+	{
+		minuteOnSchedule2--;
+	}
+	else
+	{
+		minuteOnSchedule2 = 59;
+	}
+	if(minuteOnSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOnSchedule2);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOnSchedule2);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void schedule2HourOffIncrease(void)
+{
+	if(hourOffSchedule2 < 24)
+	{
+		hourOffSchedule2++;
+	}
+	else
+	{
+		hourOffSchedule2 = 1;
+	}
+	if(hourOffSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", hourOffSchedule2);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", hourOffSchedule2);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2HourOffDecrease(void)
+{
+	if(hourOffSchedule2 > 1)
+	{
+		hourOffSchedule2--;
+	}
+	else
+	{
+		hourOffSchedule2 = 24;
+	}
+	if(hourOffSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", hourOffSchedule2);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", hourOffSchedule2);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_HOUR_X-2 , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2MinuteOffIncrease(void)
+{
+	if(minuteOffSchedule2 < 59)
+	{
+		minuteOffSchedule2++;
+	}
+	else
+	{
+		minuteOffSchedule2 = 0;
+	}
+	if(minuteOffSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOffSchedule2);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOffSchedule2);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+void schedule2MinuteOffDecrease(void)
+{
+	if(minuteOffSchedule2 > 0)
+	{
+		minuteOffSchedule2--;
+	}
+	else
+	{
+		minuteOffSchedule2 = 59;
+	}
+	if(minuteOffSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOffSchedule2);
+	else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOffSchedule2);
+	EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+//
 // Handle touch in Hour And Minute ON section
 void MenuTFTSchedule2ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 {
@@ -1073,39 +1313,21 @@ void MenuTFTSchedule2ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +1H
 	if((x >= ONE_HOUR_ADD_SHEDULE_X)&&(x <= (ONE_HOUR_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(hourOnSchedule2 < 24)
-		{
-			hourOnSchedule2++;
-		}
-		else
-		{
-			hourOnSchedule2 = 1;
-		}
-		if(hourOnSchedule2 >= 10) sprintf((char*)Msg, " %d ", hourOnSchedule2);
-		else sprintf((char*)Msg, " 0%d ", hourOnSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_HOUR_X-2 , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
-
+		schedule2HourOnIncrease();
+		EncoderState = ENCODER_SCHEDULE_2_HOUR_ON;
 	}
 
 	// Check if it is Hour to add +1M
 	else if((x >= ONE_MINUTE_ADD_SHEDULE_X)&&(x <= (ONE_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(minuteOnSchedule2 < 59)
-		{
-			minuteOnSchedule2++;
-		}
-		else
-		{
-			minuteOnSchedule2 = 0;
-		}
-		if(minuteOnSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule2);
-		else sprintf((char*)Msg, " 0%d ", minuteOnSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		schedule2MinuteOnIncrease();
+		EncoderState = ENCODER_SCHEDULE_2_MINUTE_ON;
 	}
 
 	// Check if it is Hour to add +10M
 	else if((x >= TEN_MINUTE_ADD_SHEDULE_X)&&(x <= (TEN_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
+		EncoderState = ENCODER_SCHEDULE_2_MINUTE_ON;
 		if(minuteOnSchedule2 < 49)
 		{
 			minuteOnSchedule2 = minuteOnSchedule2 + 10;
@@ -1114,9 +1336,9 @@ void MenuTFTSchedule2ActivityHourMinuteONAdd(uint16_t x, uint16_t y)
 		{
 			minuteOnSchedule2 = (minuteOnSchedule2 + 10) % 60;
 		}
-		if(minuteOnSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOnSchedule2);
-		else sprintf((char*)Msg, " 0%d ", minuteOnSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		if(minuteOnSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOnSchedule2);
+		else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOnSchedule2);
+		EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_ON_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 	}
 }
 
@@ -1128,39 +1350,21 @@ void MenuTFTSchedule2ActivityHourMinuteOFFAdd(uint16_t x, uint16_t y)
 	// Check if it is Hour to add +1H
 	if((x >= ONE_HOUR_ADD_SHEDULE_X)&&(x <= (ONE_HOUR_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(hourOffSchedule2 < 24)
-		{
-			hourOffSchedule2++;
-		}
-		else
-		{
-			hourOffSchedule2 = 1;
-		}
-		if(hourOffSchedule2 >= 10) sprintf((char*)Msg, " %d ", hourOffSchedule2);
-		else sprintf((char*)Msg, " 0%d ", hourOffSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_HOUR_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
-
+		schedule2HourOffIncrease();
+		EncoderState = ENCODER_SCHEDULE_2_HOUR_OFF;
 	}
 
 	// Check if it is Hour to add +1M
 	else if((x >= ONE_MINUTE_ADD_SHEDULE_X)&&(x <= (ONE_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
-		if(minuteOffSchedule2 < 59)
-		{
-			minuteOffSchedule2++;
-		}
-		else
-		{
-			minuteOffSchedule2 = 0;
-		}
-		if(minuteOffSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule2);
-		else sprintf((char*)Msg, " 0%d ", minuteOffSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		schedule2MinuteOffIncrease();
+		EncoderState = ENCODER_SCHEDULE_2_MINUTE_OFF;
 	}
 
 	// Check if it is Hour to add +10M
 	else if((x >= TEN_MINUTE_ADD_SHEDULE_X)&&(x <= (TEN_MINUTE_ADD_SHEDULE_X + HOOUR_MINUTE_BUTTON_W)))
 	{
+		EncoderState = ENCODER_SCHEDULE_2_MINUTE_OFF;
 		if(minuteOffSchedule2 < 49)
 		{
 			minuteOffSchedule2 = minuteOffSchedule2 + 10;
@@ -1169,9 +1373,9 @@ void MenuTFTSchedule2ActivityHourMinuteOFFAdd(uint16_t x, uint16_t y)
 		{
 			minuteOffSchedule2 = (minuteOffSchedule2 + 10) % 60;
 		}
-		if(minuteOffSchedule2 >= 10) sprintf((char*)Msg, " %d ", minuteOffSchedule2);
-		else sprintf((char*)Msg, " 0%d ", minuteOffSchedule2);
-		EF_PutString(Msg, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		if(minuteOffSchedule2 >= 10) sprintf((char*)MsgMenuTFT, " %d ", minuteOffSchedule2);
+		else sprintf((char*)MsgMenuTFT, " 0%d ", minuteOffSchedule2);
+		EF_PutString(MsgMenuTFT, STRING_ON_OFF_MINUTE_X , STRING_OFF_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 	}
 }
 
@@ -1349,43 +1553,22 @@ void clockIncreaseOneHourAndMinute(uint16_t x, uint16_t y)
 {
 	if((y >= CLOCK_B_1_POZ_Y)&&(y <= (CLOCK_B_1_POZ_Y + CLOCK_BUTTON_H))) // Add 1 Hour
 	{
-		if(Hours < 24)
-		{
-			Hours++;
-		}
-		else
-		{
-			Hours = 1;
-		}
-		sprintf((char*)Msg, " %d  ", Hours);
-		EF_PutString(Msg, STRING_H_M_NUMBER_POZ_X, STRING_HOUR_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		EncoderState = ENCODER_CLOCK_HOUR;
+
+		OneHourIncrease();
 
 	}
 	else if((y >= CLOCK_B_2_POZ_Y)&&(y <= (CLOCK_B_2_POZ_Y + CLOCK_BUTTON_H))) // Add 1 Minute
 	{
-		if(Minutes < 59)
-		{
-			Minutes++;
-		}
-		else
-		{
-			Minutes = 0;
-		}
-		sprintf((char*)Msg, " %d  ", Minutes);
-		EF_PutString(Msg, STRING_H_M_NUMBER_POZ_X, STRING_MINUTE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		EncoderState = ENCODER_CLOCK_MINUTE;
+
+		OneMinuteIncrease();
 	}
 	else if((y >= CLOCK_B_3_POZ_Y)&&(y <= (CLOCK_B_3_POZ_Y + CLOCK_BUTTON_H))) // Add 1 Day
 	{
-		if(DayOfWeek < 7)
-		{
-			DayOfWeek++;
-		}
-		else
-		{
-			DayOfWeek = 1;
-		}
-		sprintf((char*)Msg, "DZIEŃ TYG:  %d ", DayOfWeek);
-		EF_PutString(Msg, STRING_HOUR_MINUTE_POZ_X, STRING_DAY_OF_WEEK_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		EncoderState = ENCODER_CLOCK_DAY;
+
+		OneDayIncrease();
 	}
 }
 
@@ -1393,6 +1576,7 @@ void clockIncreaseSixHoursTenMinutes(uint16_t x, uint16_t y)
 {
 	if((y >= CLOCK_B_1_POZ_Y)&&(y <= (CLOCK_B_1_POZ_Y + CLOCK_BUTTON_H))) // Add 6 Hour
 	{
+		EncoderState = ENCODER_CLOCK_HOUR;
 
 		if(Hours < 19)
 		{
@@ -1402,12 +1586,14 @@ void clockIncreaseSixHoursTenMinutes(uint16_t x, uint16_t y)
 		{
 			Hours = 1;
 		}
-		sprintf((char*)Msg, " %d  ", Hours);
-		EF_PutString(Msg, (STRING_H_M_NUMBER_POZ_X-3), STRING_HOUR_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		sprintf((char*)MsgMenuTFT, " %d  ", Hours);
+		EF_PutString(MsgMenuTFT, (STRING_H_M_NUMBER_POZ_X-3), STRING_HOUR_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 
 	}
 	else if((y >= CLOCK_B_2_POZ_Y)&&(y <= (CLOCK_B_2_POZ_Y + CLOCK_BUTTON_H))) // Add 10 Minute
 	{
+		EncoderState = ENCODER_CLOCK_MINUTE;
+
 		if(Minutes < 49)
 		{
 			Minutes = Minutes +10;
@@ -1416,25 +1602,15 @@ void clockIncreaseSixHoursTenMinutes(uint16_t x, uint16_t y)
 		{
 			Minutes = (Minutes + 10) % 60;
 		}
-		sprintf((char*)Msg, " %d  ", Minutes);
-		EF_PutString(Msg, (STRING_H_M_NUMBER_POZ_X-4), STRING_MINUTE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		sprintf((char*)MsgMenuTFT, " %d  ", Minutes);
+		EF_PutString(MsgMenuTFT, (STRING_H_M_NUMBER_POZ_X-4), STRING_MINUTE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 
 	}
 	EF_SetFont(&arialBlack_20ptFontInfo);
 }
 
-void ClockIncreaseHour()
-{
 
-}
-void ClockIncreaseMinutes()
-{
 
-}
-void ClockIncreaseDay()
-{
-
-}
 
 //
 // Change status of Switch after touch them
@@ -1569,20 +1745,20 @@ void predefinedActivityTouchAction(uint8_t y)
 		{
 			ActivityButtonState[0] = 0;
 			GFX_DrawFillRoundRectangle(ACTIVITY_BUTTON_X, ACTIVITY_BUTTON_1_Y, ACTIVITY_BUTTON_W, ACTIVITY_BUTTON_H, ACTIVITY_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "KARMIENIE");
-			EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_1_X_ERRATA), (ACTIVITY_BUTTON_1_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_1_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "KARMIENIE");
+			EF_PutString(MsgMenuTFT, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_1_X_ERRATA), (ACTIVITY_BUTTON_1_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_1_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 			predefinedActivityKarmienie(0); // Turn Activity OFF
 		}
 		else // if is OFF
 		{
 			ActivityButtonState[0] = 1;
 			GFX_DrawFillRoundRectangle(ACTIVITY_BUTTON_X, ACTIVITY_BUTTON_1_Y, ACTIVITY_BUTTON_W, ACTIVITY_BUTTON_H, ACTIVITY_BUTTON_R, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
-			sprintf((char*)Msg, "KARMIENIE");
-			EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_1_X_ERRATA), (ACTIVITY_BUTTON_1_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_1_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "KARMIENIE");
+			EF_PutString(MsgMenuTFT, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_1_X_ERRATA), (ACTIVITY_BUTTON_1_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_1_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
 			predefinedActivityKarmienie(1);
 		}
 
@@ -1594,20 +1770,20 @@ void predefinedActivityTouchAction(uint8_t y)
 		{
 			ActivityButtonState[1] = 0;
 			GFX_DrawFillRoundRectangle(ACTIVITY_BUTTON_X, ACTIVITY_BUTTON_2_Y, ACTIVITY_BUTTON_W, ACTIVITY_BUTTON_H, ACTIVITY_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "CZYSZCZENIE");
-			EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_2_X_ERRATA), (ACTIVITY_BUTTON_2_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_2_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "CZYSZCZENIE");
+			EF_PutString(MsgMenuTFT, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_2_X_ERRATA), (ACTIVITY_BUTTON_2_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_2_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 			predefinedActivityCzyszczenie(0);
 		}
 		else // if is OFF
 		{
 			ActivityButtonState[1] = 1;
 			GFX_DrawFillRoundRectangle(ACTIVITY_BUTTON_X, ACTIVITY_BUTTON_2_Y, ACTIVITY_BUTTON_W, ACTIVITY_BUTTON_H, ACTIVITY_BUTTON_R, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
-			sprintf((char*)Msg, "CZYSZCZENIE");
-			EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_2_X_ERRATA), (ACTIVITY_BUTTON_2_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_2_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "CZYSZCZENIE");
+			EF_PutString(MsgMenuTFT, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_2_X_ERRATA), (ACTIVITY_BUTTON_2_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (ACTIVITY_BUTTON_X+STRING_ACTIVITIES_ON_OFF_X_ERRATA), (ACTIVITY_BUTTON_2_Y+STRING_ACTIVITIES_Y_INTER), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_ACTIVITY_BUTTON_COLOR);
 			predefinedActivityCzyszczenie(1);
 		}
 	}
@@ -1616,21 +1792,42 @@ void predefinedActivityTouchAction(uint8_t y)
 //
 // Handling Touch to increase number of WS LED
 //
+
+void WSONEincreaseNumberOfLedOnTFT(void)
+{
+	if(NrOfLeds < 98)
+			{
+				NrOfLeds++;
+			}
+			else
+			{
+				NrOfLeds = 1;
+			}
+			if(NrOfLeds < 10)sprintf((char*)MsgMenuTFT, "  %d ", NrOfLeds);
+			else sprintf((char*)MsgMenuTFT, " %d", NrOfLeds);
+			EF_PutString(MsgMenuTFT, STRING_WS_LED_POZ_NUMBER_X, STRING_WS_LED_ILOSC_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void WSONEdecreaseNumberOfLedOnTFT(void)
+{
+	if(NrOfLeds > 0)
+			{
+				NrOfLeds--;
+			}
+			else
+			{
+				NrOfLeds = 99;
+			}
+			if(NrOfLeds < 10)sprintf((char*)MsgMenuTFT, "  %d ", NrOfLeds);
+			else sprintf((char*)MsgMenuTFT, " %d", NrOfLeds);
+			EF_PutString(MsgMenuTFT, STRING_WS_LED_POZ_NUMBER_X, STRING_WS_LED_ILOSC_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
 void increaseNumberOfWSLedOnTFT(uint8_t x, uint8_t y)
 {
 	if((x >= WS_LED_BUTTON_1_X)&&(x <= (WS_LED_BUTTON_1_X + WS_LED_BUTTON_W))) // Add +1 LED
 	{
-		if(NrOfLeds < 98)
-		{
-			NrOfLeds++;
-		}
-		else
-		{
-			NrOfLeds = 1;
-		}
-		if(NrOfLeds < 10)sprintf((char*)Msg, "  %d ", NrOfLeds);
-		else sprintf((char*)Msg, " %d", NrOfLeds);
-		EF_PutString(Msg, STRING_WS_LED_POZ_NUMBER_X, STRING_WS_LED_ILOSC_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+		WSONEincreaseNumberOfLedOnTFT();
 	}
 	else if((x >= WS_LED_BUTTON_2_X)&&(x <= (WS_LED_BUTTON_2_X + WS_LED_BUTTON_W))) // Add +10 LED
 	{
@@ -1643,9 +1840,9 @@ void increaseNumberOfWSLedOnTFT(uint8_t x, uint8_t y)
 			NrOfLeds = (NrOfLeds + 10) % 99;
 		}
 	// Display String
-	if(NrOfLeds < 10)sprintf((char*)Msg, "  %d ", NrOfLeds);
-	else sprintf((char*)Msg, " %d", NrOfLeds);
-	EF_PutString(Msg, STRING_WS_LED_POZ_NUMBER_X, STRING_WS_LED_ILOSC_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+	if(NrOfLeds < 10)sprintf((char*)MsgMenuTFT, "  %d ", NrOfLeds);
+	else sprintf((char*)MsgMenuTFT, " %d", NrOfLeds);
+	EF_PutString(MsgMenuTFT, STRING_WS_LED_POZ_NUMBER_X, STRING_WS_LED_ILOSC_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
 	}
 
 
@@ -1654,8 +1851,8 @@ void increaseNumberOfWSLedOnTFT(uint8_t x, uint8_t y)
 		SendComand(UCMD_WS_NUMBER_LED);
 		EF_SetFont(&arial_11ptFontInfo);
 		GFX_DrawFillRoundRectangle(WS_LED_BUTTON_3_X, WS_B_1_POZ_Y, WS_LED_BUTTON_W, WS_LED_BUTTON_H, WS_LED_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-		sprintf((char*)Msg, "OK");
-		EF_PutString(Msg, (WS_LED_BUTTON_3_X+STRING_ERRATA_X+1), (WS_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
+		sprintf((char*)MsgMenuTFT, "OK");
+		EF_PutString(MsgMenuTFT, (WS_LED_BUTTON_3_X+STRING_ERRATA_X+1), (WS_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
 		// Write chosen number of LEDs to EEPROM memory
 		eeprom_write(EEPROM_ADR_NUMBER_WS_LEDS, &NrOfLeds, sizeof(NrOfLeds));
 	}
@@ -1747,8 +1944,8 @@ void firstSwitchTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_1_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		SwitchesButtonState[0] = 0;
 		EEPROM_RelayStateUpdate(1, 0);
@@ -1761,8 +1958,8 @@ void firstSwitchTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_1_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
 		}
 		SwitchesButtonState[0] = 1;
 		EEPROM_RelayStateUpdate(1, 1);
@@ -1778,8 +1975,8 @@ void secondSwitchTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_2_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		SwitchesButtonState[1] = 0;
 		EEPROM_RelayStateUpdate(2, 0);
@@ -1792,8 +1989,8 @@ void secondSwitchTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_2_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
 		}
 		SwitchesButtonState[1] = 1;
 		EEPROM_RelayStateUpdate(2, 1);
@@ -1809,8 +2006,8 @@ void thirdSwitchTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_3_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		SwitchesButtonState[2] = 0;
 		EEPROM_RelayStateUpdate(3, 0);
@@ -1823,8 +2020,8 @@ void thirdSwitchTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_3_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
 		}
 		SwitchesButtonState[2] = 1;
 		EEPROM_RelayStateUpdate(3, 1);
@@ -1840,8 +2037,8 @@ void fourthSwitchTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_4_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		SwitchesButtonState[3] = 0;
 		EEPROM_RelayStateUpdate(4, 0);
@@ -1854,8 +2051,8 @@ void fourthSwitchTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(SWITCH_BUTTON_X, SWITCH_4_POZ_Y, SWITCH_BUTTON_W, SWITCH_BUTTON_H, SWITCH_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (SWITCH_BUTTON_X+STRING_ERRATA_X), (SWITCH_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_ON_BUTTON_COLOR);
 		}
 		SwitchesButtonState[3] = 1;
 		EEPROM_RelayStateUpdate(4, 1);
@@ -1873,8 +2070,8 @@ void firstLightTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_1_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		LightsButtonState[0] = 0;
 		EEPROM_LightStateUpdate(1, 0);
@@ -1887,8 +2084,8 @@ void firstLightTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_1_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_1_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		LightsButtonState[0] = 1;
 		EEPROM_LightStateUpdate(1, 1);
@@ -1904,8 +2101,8 @@ void secondLightTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_2_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		LightsButtonState[1] = 0;
 		EEPROM_LightStateUpdate(2, 0);
@@ -1918,8 +2115,8 @@ void secondLightTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_2_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_2_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		LightsButtonState[1] = 1;
 		EEPROM_LightStateUpdate(2, 1);
@@ -1935,8 +2132,8 @@ void thirdLightTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_3_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		LightsButtonState[2] = 0;
 		EEPROM_LightStateUpdate(3, 0);
@@ -1949,8 +2146,8 @@ void thirdLightTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_3_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_3_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		LightsButtonState[2] = 1;
 		EEPROM_LightStateUpdate(3, 1);
@@ -1966,8 +2163,8 @@ void fourthLightTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_4_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_OFF_BUTTON_COLOR);
-			sprintf((char*)Msg, "OFF");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "OFF");
+			EF_PutString(MsgMenuTFT, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		LightsButtonState[3] = 0;
 		EEPROM_LightStateUpdate(4, 0);
@@ -1980,10 +2177,301 @@ void fourthLightTurn(uint8_t NewState)
 		{
 			EF_SetFont(&arial_11ptFontInfo);
 			GFX_DrawFillRoundRectangle(LIGHTS_BUTTON_X, LIGHT_B_4_POZ_Y, LIGHTS_BUTTON_W, LIGHTS_BUTTON_H, LIGHTS_BUTTON_R, SWITCH_ON_BUTTON_COLOR);
-			sprintf((char*)Msg, "ON");
-			EF_PutString(Msg, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
+			sprintf((char*)MsgMenuTFT, "ON");
+			EF_PutString(MsgMenuTFT, (LIGHTS_BUTTON_X+STRING_ERRATA_X), (LIGHT_B_4_POZ_Y+STRING_ERRATA_Y), ILI9341_BLACK, BG_TRANSPARENT, SWITCH_OFF_BUTTON_COLOR);
 		}
 		LightsButtonState[3] = 1;
 		EEPROM_LightStateUpdate(4, 1);
+	}
+}
+
+void OneMinuteIncrease(void)
+{
+	if(Minutes < 59)
+	{
+		Minutes++;
+	}
+	else
+	{
+		Minutes = 0;
+	}
+	sprintf((char*)MsgMenuTFT, " %d  ", Minutes);
+	EF_PutString(MsgMenuTFT, STRING_H_M_NUMBER_POZ_X, STRING_MINUTE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void OneHourIncrease(void)
+{
+	if(Hours < 24)
+	{
+		Hours++;
+	}
+	else
+	{
+		Hours = 1;
+	}
+	sprintf((char*)MsgMenuTFT, " %d  ", Hours);
+	EF_PutString(MsgMenuTFT, STRING_H_M_NUMBER_POZ_X, STRING_HOUR_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void OneDayIncrease(void)
+{
+	if(DayOfWeek < 7)
+	{
+		DayOfWeek++;
+	}
+	else
+	{
+		DayOfWeek = 1;
+	}
+	sprintf((char*)MsgMenuTFT, "DZIEŃ TYG:  %d ", DayOfWeek);
+	EF_PutString(MsgMenuTFT, STRING_HOUR_MINUTE_POZ_X, STRING_DAY_OF_WEEK_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void OneMinuteDecrease(void)
+{
+	if(Minutes > 0)
+	{
+		Minutes--;
+	}
+	else
+	{
+		Minutes = 59;
+	}
+	sprintf((char*)MsgMenuTFT, " %d  ", Minutes);
+	EF_PutString(MsgMenuTFT, STRING_H_M_NUMBER_POZ_X, STRING_MINUTE_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+
+}
+
+void OneHourDecrease(void)
+{
+	if(Hours > 0)
+	{
+		Hours--;
+	}
+	else
+	{
+		Hours = 24;
+	}
+	sprintf((char*)MsgMenuTFT, " %d  ", Hours);
+	EF_PutString(MsgMenuTFT, STRING_H_M_NUMBER_POZ_X, STRING_HOUR_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+
+}
+
+void OneDayDecrease(void)
+{
+	if(DayOfWeek > 0)
+	{
+		DayOfWeek--;
+	}
+	else
+	{
+		DayOfWeek = 7;
+	}
+	sprintf((char*)MsgMenuTFT, "DZIEŃ TYG:  %d ", DayOfWeek);
+	EF_PutString(MsgMenuTFT, STRING_HOUR_MINUTE_POZ_X, STRING_DAY_OF_WEEK_POZ_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+
+}
+
+void TenSecondsActivitiesDurationIncrease(void)
+{
+	if(activitiesDurationTimeInSeconds < 990)
+	{
+		activitiesDurationTimeInSeconds = activitiesDurationTimeInSeconds + 10;
+	}
+	else
+	{
+		activitiesDurationTimeInSeconds = 10;
+	}
+	if(activitiesDurationTimeInSeconds < 100) sprintf((char*)MsgMenuTFT, " %ld s ", activitiesDurationTimeInSeconds);
+	else sprintf((char*)MsgMenuTFT, "%ld s", activitiesDurationTimeInSeconds);
+	EF_PutString(MsgMenuTFT, ACTIVITIES_TIME_DURATION_NUMBER_X, ACTIVITIES_TIME_DURATION_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void TenSecondsActivitiesDurationDecrease(void)
+{
+	if(activitiesDurationTimeInSeconds > 10)
+	{
+		activitiesDurationTimeInSeconds = activitiesDurationTimeInSeconds - 10;
+	}
+	else
+	{
+		activitiesDurationTimeInSeconds = 990;
+	}
+
+	if(activitiesDurationTimeInSeconds < 100) sprintf((char*)MsgMenuTFT, " %ld s ", activitiesDurationTimeInSeconds);
+	else sprintf((char*)MsgMenuTFT, "%ld s", activitiesDurationTimeInSeconds);
+	EF_PutString(MsgMenuTFT, ACTIVITIES_TIME_DURATION_NUMBER_X, ACTIVITIES_TIME_DURATION_Y, ILI9341_BLACK, BG_COLOR, ILI9341_LIGHTGREY);
+}
+
+void encoderUpgrade(int16_t *EncoderCntWsk)
+{
+	EncoderCounter = *EncoderCntWsk;
+	if(EncoderCounter != EncoderCounterPrevious) // if was rotated
+	{
+		if (EncoderCounter > EncoderCounterPrevious) // if increase
+		{
+			if((EncoderCounter - EncoderCounterPrevious >= 2)) // if full rotate was done
+			{
+				RotateUpgradeNumber = (EncoderCounter - EncoderCounterPrevious)/2;
+				for(uint8_t i = 1 ; i <= RotateUpgradeNumber ; i++)
+				{
+					if(EncoderState == ENCODER_IDLE)
+					{
+						if(State == MENUTFT_PARAMETERS)
+							{
+							State = MENUTFT_SWITCH;
+							StateChangeFlag = 1;
+							}
+						else if (State == MENUTFT_SWITCH)
+						{
+							State = MENUTFT_LIGHTS;
+							StateChangeFlag = 1;
+						}
+						else if (State == MENUTFT_LIGHTS)
+							{
+							State = MENUTFT_PARAMETERS;
+							StateChangeFlag = 1;
+							}
+					}
+					else if(EncoderState == ENCODER_CLOCK_MINUTE)
+					{
+						OneMinuteIncrease();
+					}
+					else if(EncoderState == ENCODER_CLOCK_HOUR)
+					{
+						OneHourIncrease();
+					}
+					else if (EncoderState == ENCODER_CLOCK_DAY)
+					{
+						OneDayIncrease();
+					}
+					else if (EncoderState == ENCODER_WS_LED)
+					{
+						WSONEincreaseNumberOfLedOnTFT();
+					}
+					else if(EncoderState == ENCODER_ACTIVITIES)
+					{
+						TenSecondsActivitiesDurationIncrease();
+					}
+					//Schedules
+					else if (EncoderState == ENCODER_SCHEDULE_1_HOUR_ON)
+					{
+						schedule1HourOnIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_MINUTE_ON)
+					{
+						schedule1MinuteOnIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_HOUR_OFF)
+					{
+						schedule1HourOffIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_MINUTE_OFF)
+					{
+						schedule1MinuteOffIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_HOUR_ON)
+					{
+						schedule2HourOnIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_MINUTE_ON)
+					{
+						schedule2MinuteOnIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_HOUR_OFF)
+					{
+						schedule2HourOffIncrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_MINUTE_OFF)
+					{
+						schedule2MinuteOffIncrease();
+					}
+				}
+				RotateUpgradeNumber = 0;
+				EncoderCounterPrevious = EncoderCounter;
+			}
+		}
+		else // if decrease
+		{
+			if(EncoderCounterPrevious - EncoderCounter >= 2) // if full rotate was done
+			{
+				RotateUpgradeNumber = (EncoderCounterPrevious - EncoderCounter)/2;
+				for(uint8_t i = 1 ; i <= RotateUpgradeNumber ; i++)
+				{
+					if(EncoderState == ENCODER_IDLE)
+					{
+						if(State == MENUTFT_PARAMETERS)
+							{
+							State = MENUTFT_LIGHTS;
+							StateChangeFlag = 1;
+							}
+						else if (State == MENUTFT_SWITCH)
+							{
+							State = MENUTFT_PARAMETERS;
+							StateChangeFlag = 1;
+							}
+						else if (State == MENUTFT_LIGHTS)
+							{
+							State = MENUTFT_SWITCH;
+							StateChangeFlag = 1;
+							}
+					}
+					else if(EncoderState == ENCODER_CLOCK_MINUTE)
+					{
+						OneMinuteDecrease();
+					}
+					else if(EncoderState == ENCODER_CLOCK_HOUR)
+					{
+						OneHourDecrease();
+					}
+					else if (EncoderState == ENCODER_CLOCK_DAY)
+					{
+						OneDayDecrease();
+					}
+					else if (EncoderState == ENCODER_WS_LED)
+					{
+						WSONEdecreaseNumberOfLedOnTFT();
+					}
+					else if(EncoderState == ENCODER_ACTIVITIES)
+					{
+						TenSecondsActivitiesDurationDecrease();
+					}
+					//Schedules
+					else if (EncoderState == ENCODER_SCHEDULE_1_HOUR_ON)
+					{
+						schedule1HourOnDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_MINUTE_ON)
+					{
+						schedule1MinuteOnDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_HOUR_OFF)
+					{
+						schedule1HourOffDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_1_MINUTE_OFF)
+					{
+						schedule1MinuteOffDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_HOUR_ON)
+					{
+						schedule2HourOnDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_MINUTE_ON)
+					{
+						schedule2MinuteOnDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_HOUR_OFF)
+					{
+						schedule2HourOffDecrease();
+					}
+					else if (EncoderState == ENCODER_SCHEDULE_2_MINUTE_OFF)
+					{
+						schedule2MinuteOffDecrease();
+					}
+				}
+				EncoderCounterPrevious = EncoderCounter;
+			}
+		}
 	}
 }
