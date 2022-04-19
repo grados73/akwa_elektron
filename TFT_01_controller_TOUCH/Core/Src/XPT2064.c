@@ -15,6 +15,8 @@
 #define MAX_SAMPLES 10
 // Interval between each samples (ms)
 #define SAMPLE_INTERVAL	5
+#define TFT_2_4_CALA 0
+#define TFT_3_2_CALA 1
 
 static SPI_HandleTypeDef *Xpt2046SpiHandler; // SPI handler
 static IRQn_Type Xpt2046Irqn; // Interrupt numer
@@ -151,6 +153,8 @@ void XPT2046_ReadTouchPoint(uint16_t *X, uint16_t *Y)
 void XPT2046_GetTouchPoint(uint16_t *X, uint16_t *Y)
 {
 	uint32_t AverageX = 0, AverageY = 0;
+	uint32_t MeasureY = 0, RealY = 0;
+
 	uint8_t i;
 
 	for(i = 0; i < MAX_SAMPLES; i++)
@@ -160,7 +164,28 @@ void XPT2046_GetTouchPoint(uint16_t *X, uint16_t *Y)
 	}
 
 	*X = AverageX / MAX_SAMPLES;
+
+#if (TFT_2_4_CALA == 1)
 	*Y = AverageY / MAX_SAMPLES;
+	MeasureY = RealY; // To delete warning
+	RealY = MeasureY; // To delete warning
+
+#else
+	MeasureY = AverageY / MAX_SAMPLES;
+	if (MeasureY > 120)
+	{
+		RealY = 120 - (MeasureY - 120);
+	}
+	else if (MeasureY < 120)
+	{
+		RealY = 120 + (120 - MeasureY);
+	}
+	else
+	{
+		RealY = MeasureY; //120 = 120
+	}
+	*Y = RealY;
+#endif
 }
 
 //
